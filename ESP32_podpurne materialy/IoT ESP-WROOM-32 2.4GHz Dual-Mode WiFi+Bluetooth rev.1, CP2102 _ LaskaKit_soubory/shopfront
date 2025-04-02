@@ -1,0 +1,2425 @@
+// I hate IE so much...
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+    'use strict';
+
+    if (search instanceof RegExp) {
+      throw TypeError('first argument must not be a RegExp');
+    }
+    if (start === undefined) { start = 0; }
+    return this.indexOf(search, start) !== -1;
+  };
+}
+if (!Array.prototype.includes) {
+  Object.defineProperty(Array.prototype, 'includes', {
+    value: function (searchElement, fromIndex) {
+
+      // 1. Let O be ? ToObject(this value).
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If len is 0, return false.
+      if (len === 0) {
+        return false;
+      }
+
+      // 4. Let n be ? ToInteger(fromIndex).
+      //    (If fromIndex is undefined, this step produces the value 0.)
+      var n = fromIndex | 0;
+
+      // 5. If n ≥ 0, then
+      //  a. Let k be n.
+      // 6. Else n < 0,
+      //  a. Let k be len + n.
+      //  b. If k < 0, let k be 0.
+      var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+      function sameValueZero(x, y) {
+        return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+      }
+
+      // 7. Repeat, while k < len
+      while (k < len) {
+        // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+        // b. If SameValueZero(searchElement, elementK) is true, return true.
+        // c. Increase k by 1.
+        if (sameValueZero(o[k], searchElement)) {
+          return true;
+        }
+        k++;
+      }
+
+      // 8. Return false
+      return false;
+    }
+  });
+}
+
+// Add global methods
+window.fvstudio_shippingdate = {
+    template: '',
+    language: '',
+    state: {},
+
+    selectDelivery: function(idx) {
+        if (['Rock', 'Soul', 'Pop'].includes(fvstudio_shippingdate.template)) {
+            const item = $('.fv-datum .radio-wrapper[data-idx='+idx+'] input');
+            item.attr('checked', 'checked');
+
+            if (location.origin.includes('www.rybizak.cz')) {
+                if (idx === 0) {
+                    sessionStorage.setItem('fv_deliverydate', 'asap');
+                    $('#mock-submit-order').hide();
+                    $('#submit-order').show();
+                } else {
+                    const deliveryDate = $('.fv-datum select[name=datepicker]').val();
+                    if (deliveryDate !== 'none') {
+                        sessionStorage.setItem('fv_deliverydate', deliveryDate);
+                        $('#mock-submit-order').hide();
+                        $('#submit-order').show();
+                    } else {
+                        $('#mock-submit-order').show();
+                        $('#submit-order').hide();
+                    }
+                }
+            }
+        } else {
+            $('.fv-datum .radio-wrapper').each(function(itemIdx, item) {
+                if (itemIdx === idx && $(item).find('input').is(':checked')) {
+                    $('.fv-datum .radio-wrapper').each(function(uitemIdx, uitem) {
+                        uitem.classList.remove('active');
+                    });
+                    item.classList.add('active');
+                }
+            });
+        }
+    },
+
+    checkTimepickerAvailability: function() {
+        let sel = $('#fvDeliveryDaySelect');
+        let selVal = 'none';
+        if (sel == null) {
+            const dt = $('.fv-datum input[name=datepicker]').val();
+            selVal = dt ? moment(dt, 'DD.MM.YYYY').format('YYYY-MM-DD') : 'none';
+        } else {
+            selVal = sel.val();
+        }
+
+        if (selVal == 'none') {
+            $('#fvDeliveryTimeSelect').attr('disabled', true);
+        } else {
+            $('#fvDeliveryTimeSelect').attr('disabled', false);
+        }
+    },
+
+    onDeliveryDateChange: function(type, resetTimeSelect, isDatePicker) {
+        const sel = $('#fvDeliveryDaySelect');
+        let selVal = sel.val();
+        if (isDatePicker === true) {
+            const dt = $('.fv-datum input[name=datepicker]').val();
+            selVal = dt ? moment(dt, 'DD.MM.YYYY').format('YYYY-MM-DD') : 'none';
+            sel.blur();
+        }
+
+        if (type === 'date') {
+            fvstudio_shippingdate.checkTimepickerAvailability();
+        }
+
+        if (selVal !== 'none') {
+            if (['Rock', 'Soul', 'Pop'].includes(fvstudio_shippingdate.template)) {
+                $('.fv-datum .radio-wrapper:nth-child(2) input').attr('checked', 'checked');
+                fvstudio_shippingdate.calculateSlotAvailability(resetTimeSelect);
+            } else {
+                $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+                $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+
+                fvstudio_shippingdate.calculateSlotAvailability(resetTimeSelect);
+            }
+        }
+        const selTime = $('#fvDeliveryTimeSelect');
+        if (selTime.val() !== 'none') {
+            if (['Rock', 'Soul', 'Pop'].includes(fvstudio_shippingdate.template)) {
+                $('.fv-datum .radio-wrapper:nth-child(2) input').attr('checked', 'checked');
+            } else {
+                $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+                $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+            }
+        }
+
+        if (location.origin.includes('www.rybizak.cz')) {
+            const deliveryOption = $('.fv-datum input[name=shippingDate]:checked').val();
+            if (deliveryOption === 'custom') {
+                const deliveryDate = $('.fv-datum select[name=datepicker]').val();
+                if (deliveryDate !== 'none') {
+                    sessionStorage.setItem('fv_deliverydate', deliveryDate);
+                    $('#mock-submit-order').hide();
+                    $('#submit-order').show();
+                } else {
+                    sessionStorage.removeItem('fv_deliverydate');
+                    $('#mock-submit-order').show();
+                    $('#submit-order').hide();
+                }
+            }
+        }
+
+        if (location.origin.includes('www.rodinnafarma.com') && type === 'date') {
+            const optHolder = $('#fvOptHolder');
+            if (optHolder.length === 0) {
+                $(document.createElement('div')).attr('id', 'fvOptHolder').hide().appendTo('body');
+            }
+
+            const date = moment(selVal);
+            if (date.format('ddd') === 'Sat') {
+                selTime.val('none');
+                selTime.find('option[value="t13301800"]').appendTo(optHolder);
+            } else {
+                optHolder.find('option[value="t13301800"]').appendTo(selTime);
+            }
+        }
+
+        const selectedShippingMethodGuid = sessionStorage.getItem('fv_selectedshippingmethod');
+        let skipDays = fvstudio_shippingdate.state.settings.shippingDelay == null ? 1 : fvstudio_shippingdate.state.settings.shippingDelay;
+        if (fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true && fvstudio_shippingdate.state.settings.shippingDelayShippingMethods != null) {
+            const methodDelay = fvstudio_shippingdate.state.settings.shippingDelayShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+            skipDays = methodDelay ? methodDelay.value : skipDays;
+        }
+        if (type === 'date'
+            && fvstudio_shippingdate.state.settings.addons.timeSlotsCapacity === false
+            && skipDays === 0
+            && selVal !== 'none') {
+            const now = moment();
+            const date = moment(selVal);
+
+            const selectedShippingMethodGuid = sessionStorage.getItem('fv_selectedshippingmethod');
+            let increment = fvstudio_shippingdate.state.settings.deliveryTimesSlotSize || 1;
+            if (fvstudio_shippingdate.state.settings.addons
+                && fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true
+                && selectedShippingMethodGuid != null) {
+                const methodTimes = fvstudio_shippingdate.state.settings.deliveryTimesSlotSizeShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                increment = methodTimes ? Number(methodTimes.size) : 1;
+            }
+            if (increment === 0) {
+                increment = 1;
+            }
+
+            if (date.isSame(now, 'day')) {
+                if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                    $('select#fv-fake-timepicker').remove();
+                    const fakeTimeSelect = $('<select id="fv-fake-timepicker"></select>').appendTo('body');
+                    fakeTimeSelect.hide();
+                    selTime.find('option').clone().appendTo(fakeTimeSelect);
+                }
+
+                selTime.find('option:not([value="none"])').each(function (index, item) {
+                    const opt = $(item);
+                    const value = opt.attr('value');
+                    const isExact = value.includes('_exact_');
+                    const timeStart = isExact ? value.substr(-4, 2) : value.substr(1, 2);
+                    const timeStartMinute = isExact ? value.substr(-2, 2) : value.substr(3, 2);
+                    const timeEnd = isExact ? value.substr(0, 2) : value.substr(5, 2);
+                    const timeEndMinute = isExact ? value.substr(2, 2) : value.substr(7, 2);
+
+                    const startMoment = moment().set({ hour: timeStart, minute: timeStartMinute });
+                    const startDiff = moment.duration(startMoment.diff(now));
+                    const endMoment = moment().set({ hour: timeEnd, minute: timeEndMinute });
+                    const endDiff = moment.duration(endMoment.diff(now));
+
+                    // For customers without slots capacity
+                    let slotLockTimeMinutes = 0;
+                    let isBefore = startDiff.asMinutes() < slotLockTimeMinutes;
+
+                    if (increment < 1) {
+                        const slotMoment = moment().set({ hour: timeStart, minute: timeStartMinute, second: 0 });
+                        isBefore = slotMoment.diff(now, 'minutes') < ((60 * increment) - 1);
+                    }
+                    if (location.origin.includes('www.iboxik.cz')) {
+                        isBefore = Number(timeStart) <= (Number(now.format('HH')) + 4) || Number(timeStart) < 9;
+                    }
+                    if (location.origin.includes('www.promenada.cz')) {
+                        isBefore = Number(timeStart) <= (Number(now.format('HH')) + 2);
+                    }
+                    if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                        isBefore = Number(timeStart) <= (Number(now.format('HH')) + 1);
+                    }
+                    if (location.origin.includes('www.sabilco.cz')) {
+                        isBefore = Number(timeStart) <= (Number(now.format('HH')) + 1);
+                    }
+                    if (location.origin.includes('www.charliesgo.cz') && selectedShippingMethodGuid === '063deedf-1906-11eb-ac23-ac1f6b0076ec') {
+                        isBefore = (
+                            Number(timeStart) <= (Number(now.format('HH')) - 1)
+                            || (Number(timeStart) === (Number(now.format('HH'))) && (Number(timeStartMinute) - Number(now.format('mm')) < 5))
+                        );
+                    }
+                    if (location.origin.includes('www.kvetinystepankova.cz')) {
+                        slotLockTimeMinutes = 180;
+                        isBefore = startDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+                    if (location.origin.includes('www.citysushi.sk')) {
+                        slotLockTimeMinutes = 90;
+                        isBefore = startDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+                    if (location.origin.includes('www.epultik.cz')) {
+                        slotLockTimeMinutes = 90;
+                        isBefore = startDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+                  
+                    if (location.origin.includes('www.restaurace-chyne.cz')) {
+                        slotLockTimeMinutes = 5;
+                        isBefore = endDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+                  
+                    if (location.origin.includes('masokrecek.cz') && index === 0) {
+                        isBefore = Number(timeStart) <= (Number(now.format('HH')) + 3);
+                    }
+                    if (location.origin.includes('www.adamkrupa.cz')) {
+                        const slotMoment = moment().set({ hour: timeStart, minute: timeStartMinute, second: 0 });
+                        isBefore = slotMoment.diff(now, 'minutes') < 60;
+                    }
+                    if (location.origin.includes('www.holandskekvetiny.cz')) {
+                        slotLockTimeMinutes = 240;
+                        isBefore = startDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+                    if (location.origin.includes('www.partysluzby.cz')) {
+                        isBefore = Number(timeStart) < 14;
+                    }
+                    if (location.origin.includes('www.klubnika.eu')) {
+                        slotLockTimeMinutes = 180;
+                        isBefore = Number(timeStart) < 12 ||startDiff.asMinutes() < slotLockTimeMinutes;
+                    }
+
+                    if (isBefore) {
+                        opt.attr('disabled', 'disabled');
+                        if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                            $(item).remove();
+                        }
+                        if (selTime.val() == null) {
+                            selTime.val('none');
+                        }
+                    }
+                });
+            } else {
+                if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                    const fakeTimeSelect = $('select#fv-fake-timepicker');
+                    if (fakeTimeSelect.length) {
+                        selTime.find('option').remove();
+                        fakeTimeSelect.find('option').clone().appendTo(selTime);
+                    }
+                }
+
+                selTime.find('option:not([value="none"])').each(function (index, item) {
+                    const opt = $(item);
+                    opt.removeAttr('disabled');
+                    opt.removeAttr('hidden');
+                });
+
+                if (location.origin.includes('www.klubnika.eu')) {
+                    const diff = moment.duration(date.clone().startOf('day').diff(now.clone().startOf('day'))).asDays();
+                    if (diff === 1) {
+                        selTime.find('option:not([value="none"])').each(function (index, item) {
+                            const opt = $(item);
+                            const value = opt.val();
+                            const isExact = value.includes('_exact_');
+                            const timeStart = isExact ? value.substr(-4, 2) : value.substr(1, 2);
+                            if (Number(timeStart) < 12) {
+                                opt.attr('disabled', 'disabled');
+                            }
+                        });
+                    }
+                    if (date.format('ddd') === 'Sun') {
+                        selTime.find('option:not([value="none"])').each(function (index, item) {
+                            const opt = $(item);
+                            const value = opt.val();
+                            const isExact = value.includes('_exact_');
+                            const timeStart = isExact ? value.substr(-4, 2) : value.substr(1, 2);
+                            const timeEnd = isExact ? value.substr(0, 2) : value.substr(5, 2);
+                            if (Number(timeEnd) > 16) {
+                                opt.attr('disabled', 'disabled');
+                            }
+                        });
+                    }
+                }
+
+                if (location.origin.includes('www.iboxik.cz')) {
+                    const diff = moment.duration(date.clone().startOf('day').diff(now.clone().startOf('day'))).asDays();
+                    if (diff === 1 && Number(now.format('HH')) >= 17) {
+                        selTime.find('option:not([value="none"])').each(function (index, item) {
+                            const opt = $(item);
+                            if (index < 2) {
+                                opt.attr('disabled', 'disabled');
+                                if (selTime.val() == null) {
+                                    selTime.val('none');
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (location.origin.includes('www.partysluzby.cz')) {
+                    if ((Number(now.format('HH')) >= 9 || ['Sat', 'Sun'].includes(now.format('ddd'))) && $(sel).prop('selectedIndex') === 1) {
+                        selTime.find('option:not([value="none"])').each(function (index, item) {
+                            const opt = $(item);
+                            const value = opt.attr('value');
+                            const isExact = value.includes('_exact_');
+                            const timeStart = isExact ? value.substr(-4, 2) : value.substr(1, 2);
+                            if (Number(timeStart) < 14) {
+                                opt.attr('disabled', 'disabled');
+                                if (selTime.val() == null) {
+                                    selTime.val('none');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        if (type === 'date') {
+            if (location.origin.includes('www.sistersbistro.cz') || location.origin.includes('www.cukrarskala.cz') || location.origin.includes('www.cafeimperialdolce.cz')) {
+                if (type === 'date' && resetTimeSelect) {
+                    selTime.val('none');
+                }
+
+                const now = moment();
+                const day = moment(selVal);
+
+                const nowCompare = now.clone();
+
+                let maxHrDiff = 15;
+                if (location.origin.includes('www.cafeimperialdolce.cz')) {
+                    maxHrDiff = 23;
+                }
+
+                selTime.find('option:not([value="none"])').each(function (index, item) {
+                    const opt = $(item);
+                    opt.removeAttr('disabled');
+                    opt.removeAttr('hidden');
+
+                    const timeStart = opt.val().substr(1, 4);
+                    const timeStartHr = timeStart.substr(0, 2);
+                    const timeStartMin = timeStart.substr(2, 2);
+                    const dayCompare = day.clone().set({hour: Number(timeStartHr), minute: Number(timeStartMin)});
+                    const hrDiff = dayCompare.diff(nowCompare, 'hours');
+                    if (hrDiff <= maxHrDiff) {
+                        opt.attr('disabled', 'disabled');
+                    }
+                });
+            }
+        }
+    },
+
+    calculateSlotAvailability: function(resetTimeSelect) {
+        if (!$('.fv-datum').length) {
+            return;
+        }
+        if (fvstudio_shippingdate.state.settings.addons.timeSlotsCapacity !== true) {
+            return;
+        }
+
+        const now = moment();
+
+        let deliveryDate = $('.fv-datum select[name=datepicker]').val();
+        if (fvstudio_shippingdate.state.settings.addons.datepicker === true) {
+            deliveryDate = moment($('.fv-datum input[name=datepicker]').val(), 'DD.MM.YYYY');
+        }
+
+        if (resetTimeSelect) {
+            $('.fv-datum select[name=timepicker]').val('none');
+        }
+
+        const isToday = moment(deliveryDate, 'YYYY-MM-DD').isSame(now, 'day');
+        const isTomorrow = moment(deliveryDate, 'YYYY-MM-DD').isSame(now.clone().add(1, 'day'), 'day');
+
+        const allOrders = fvstudio_shippingdate.state.settings.deliveryTimesSlotsOrders;
+        const dayOrders = allOrders.filter(function (item) {
+            return moment(item.slotDay, 'YYYY-MM-DD').isSame(deliveryDate, 'day');
+        });
+
+        const opts = $('.fv-datum select[name=timepicker] option:not(:nth-child(1))');
+
+        const slotCapactities = {};
+        const nowHour = Number(now.format('HH'));
+        const nowMinute = Number(now.format('mm'));
+
+        // only allow slot size that are enabled
+        let deliveryTimes = fvstudio_shippingdate.state.settings.deliveryTimes;
+
+        if (fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true) {
+            const selectedShippingMethodGuid =sessionStorage.getItem('fv_selectedshippingmethod');
+            const methodTimes = fvstudio_shippingdate.state.settings.deliveryTimesShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+            deliveryTimes = methodTimes ? methodTimes.times : [];
+        }
+        const slotSizes = fvstudio_shippingdate.state.settings.deliveryTimesSlots
+            .filter(function(item) {
+                return deliveryTimes.includes(item.slot);
+            });
+
+        // For customers with slot capacity
+        let slotLockTimeMinutes = 60;
+        if (location.origin.includes('www.wevar.cz')) {
+            slotLockTimeMinutes = 45;
+        }
+
+        if (location.origin.includes('www.stefanochef.cz')) {
+            slotLockTimeMinutes = 30;
+        }
+        if (location.origin.includes('www.kvetinybrno.cz') && sessionStorage.getItem('fv_selectedshippingmethod') === '0424a956-e5f2-11ea-a065-0cc47a6c92bc') {
+            slotLockTimeMinutes = -90;
+        }
+
+        let hiddenSlotsCount = 0;
+        $('.fv-datum select[name=timepicker]').find('[value="no-slots-avail"]').remove();
+        opts.each(function(idx, item) {
+            const el = $(item);
+            $(item).attr('disabled', false);
+            $(item).attr('hidden', false);
+            $(item).find('.sold-out').remove();
+            const slotKey = el.attr('value');
+
+            const startHour = Number(slotKey.substr(1, 2));
+            const startMinute = Number(slotKey.substr(3, 2));
+
+            const startMoment = moment().set({ hour: startHour, minute: startMinute });
+            const startDiff = moment.duration(startMoment.diff(now));
+
+            if (
+                isToday
+                && startDiff.asMinutes() < slotLockTimeMinutes
+            ) {
+                $(item).attr('disabled', true);
+                $(item).attr('hidden', true);
+                hiddenSlotsCount++;
+            }
+
+            let slotSize;
+            if (fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true) {
+                const selectedShippingMethodGuid =sessionStorage.getItem('fv_selectedshippingmethod');
+                slotSize = slotSizes.filter(function(s) { return s.slot === slotKey && s.shippingMethod === selectedShippingMethodGuid; })[0];
+            } else {
+                slotSize = slotSizes.filter(function(s) { return s.slot === slotKey; })[0];
+            }
+
+            if (!slotSize) {
+                // Slot size record not found, so set to disabled
+                $(item).attr('disabled', 'disabled');
+            } else {
+                // console.log('For', el.text());
+
+                let slotOrders = dayOrders.filter(function (order) {
+                    return order.slotTime === slotKey;
+                });
+                if (fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true) {
+                    const selectedShippingMethodGuid =sessionStorage.getItem('fv_selectedshippingmethod');
+                    slotOrders = dayOrders.filter(function (order) {
+                        return order.slotTime === slotKey && order.shippingMethod === selectedShippingMethodGuid;
+                    });
+                }
+                const usedCap = slotOrders.length;
+                let allowedCap = 0;
+                if (fvstudio_shippingdate.state.settings.addons.shippingMethodSpecificOptions === true) {
+                    const selectedShippingMethodGuid =sessionStorage.getItem('fv_selectedshippingmethod');
+                    allowedCap = slotSizes.filter(function (size) { return size.slot === slotKey && size.shippingMethod === selectedShippingMethodGuid; })[0] && slotSizes.filter(function (size) { return size.slot === slotKey && size.shippingMethod === selectedShippingMethodGuid; })[0].size
+                        ? Number(slotSizes.filter(function(size) { return size.slot === slotKey && size.shippingMethod === selectedShippingMethodGuid; })[0].size)
+                        : 0;
+                } else {
+                    allowedCap = slotSizes.filter(function (size) { return size.slot === slotKey; })[0] && slotSizes.filter(function (size) { return size.slot === slotKey; })[0].size
+                        ? Number(slotSizes.filter(function(size) { return size.slot === slotKey; })[0].size)
+                        : 0;
+                }
+                // console.log('---> used cap', usedCap, '/', allowedCap);
+                // console.log('');
+                if (usedCap >= allowedCap) {
+                    $(item).attr('disabled', 'disabled');
+                    if (location.origin.includes('www.veselabrambora.cz')) {
+                        $(item).append(' <span class="sold-out">(vyčerpáno)</span>');
+                    } else {
+                        $(item).append(' <span class="sold-out">(vyprodáno)</span>');
+                    }
+                }
+
+                slotCapactities[slotKey] = allowedCap - usedCap;
+
+                // Iceland specific time lock
+                if (location.origin.includes('eshop.iceland.cz') && isToday) {
+                    const selectedShippingMethodGuid = sessionStorage.getItem('fv_selectedshippingmethod');
+                    if (selectedShippingMethodGuid !== '8fdb2c89-3fae-11e2-a723-705ab6a2ba75') {
+                        const lock3Hours = ['0424a956-e5f2-11ea-a065-0cc47a6c92bc', '2285d0b6-3614-11eb-ac23-ac1f6b0076ec'];
+                        if (lock3Hours.includes(selectedShippingMethodGuid) && (startHour - nowHour) < 4) {
+                            $(item).attr('disabled', 'disabled');
+                        }
+                        if (!lock3Hours.includes(selectedShippingMethodGuid) && nowHour > 6) {
+                            $(item).attr('disabled', 'disabled');
+                        }
+                    }
+                }
+                // nadoma.bistrogreen.cz specific time lock
+                if (location.origin.includes('nadoma.bistrogreen.cz') && isToday) {
+                    if ((startHour - nowHour) < 2) {
+                        $(item).attr('disabled', 'disabled');
+                    }
+                }
+                // sladkapohotovost.cz specific time lock
+                if (location.origin.includes('sladkapohotovost.cz')) {
+                    if (isToday && (startHour - nowHour) <= 1) {
+                        $(item).attr('disabled', 'disabled');
+                    }
+                    if (isToday && idx === 0) {
+                        $(item).attr('disabled', 'disabled');
+                    }
+                    if (isTomorrow && idx === 0 && Number(now.format('HH')) >= 18) {
+                        $(item).attr('disabled', 'disabled');
+                    }
+                }
+                // eshop.mafita.cz specific time lock
+                if (location.origin.includes('eshop.mafita.cz')) {
+                    const lockApplies = 
+                        ((['Wed'].includes(moment().format('ddd')) && nowHour >= 17)
+                        || ['Thu', 'Fri'].includes(moment().format('ddd')))
+                        && deliveryDate.format('ddd') === 'Fri';
+                    if (lockApplies && Math.abs(moment().set({hour: 0, minute: 0}).diff(deliveryDate, 'days')) < 3 && startHour === 8) {
+                        $(item).attr('disabled', 'disabled');
+                    }
+                }
+                // www.dobrereznictvi.cz specific time lock
+                if (location.origin.includes('www.dobrereznictvi.cz')) {
+                    const selectedShippingMethodGuid = sessionStorage.getItem('fv_selectedshippingmethod');
+                    if (selectedShippingMethodGuid === '08ccfaa3-88dd-11ec-90ab-b8ca3a6a5ac4' && isTomorrow && nowHour >= 12) {
+                        if ((idx + 1) < opts.length) {
+                            $(item).attr('disabled', 'disabled');
+                        }
+                    }
+                }
+            }
+
+            // Override for iceland to disable some slots during Christmas
+            if (
+                location.origin.includes('eshop.iceland.cz') &&
+                sessionStorage.getItem('fv_selectedshippingmethod') === '0424a956-e5f2-11ea-a065-0cc47a6c92bc'
+            ) {
+                if (deliveryDate === '2021-12-24' && startHour >= 13) {
+                    $(item).attr('disabled', 'disabled');
+                }
+                if (deliveryDate === '2021-12-31' && startHour >= 15) {
+                    $(item).attr('disabled', 'disabled');
+                }
+            }
+        });
+
+        // No slots for today note
+        if (slotSizes.length > 0 && hiddenSlotsCount === slotSizes.length) {
+            const noSlotsNoteHtml = '<option value="no-slots-avail" disabled="disabled">' + fvstudio_shippingdate.i18n[fvstudio_shippingdate.language]['noSlotsForDayAnymore'] + '</option>';
+            $('.fv-datum select[name=timepicker]').append(noSlotsNoteHtml);
+        }
+    },
+
+    empty_deliveryday_alert: function() {
+        alert('Vyberte prosím požadované datum, případně zvolte možnost Co nejdříve.');
+    },
+
+    run: function(template, language, projectId) {
+        const currentPath = String(window.location.pathname);
+        if (
+            !currentPath.includes('kosik') && !currentPath.includes('objednavka')
+            && !currentPath.includes('cart') && !currentPath.includes('order')
+            && !currentPath.includes('kosar') && !currentPath.includes('rendeles')
+            && !currentPath.includes('cos-de-cumparaturi') && !currentPath.includes('comanda')
+            && !currentPath.includes('warenkorb') && !currentPath.includes('bestellung')
+            && !currentPath.includes('koszyk') && !currentPath.includes('zamowienie')
+            && !currentPath.includes('gio-hang') && !currentPath.includes('dat-hang')
+        ) {
+            return;
+        }
+
+        if ((
+            location.origin.includes('www.safework.cz')
+            || location.origin.includes('www.safework.sk')
+            || location.origin.includes('www.suchy-led.cz')
+            || location.origin.includes('www.suchylad.eu')
+            || location.origin.includes('www.termoboxy.cz')
+            || location.origin.includes('www.termoboxy.sk')
+            ) && shoptet.tracking.productsList == null) {
+            console.log('Tracking not loaded yet, wait up...');
+            setTimeout(function() {
+                fvstudio_shippingdate.run(template, language, projectId);
+            }, 200);
+            return;
+        }
+
+        fvstudio_shippingdate.template = template;
+        fvstudio_shippingdate.language = language;
+        const API_URL = 'https://doplnky.fv-studio.cz/shippingdate';
+        const state = {
+            headerText: '',
+            settings: {},
+        };
+        let deliveryTimesOptions = {};
+
+        let ORDER_SLOTS_ENABLED = false;
+
+        // Global exceptions for shops
+        let EXCP_HIDE_ASAP = false;
+        let USE_DATEPICKER_DROPDOWN = false;
+
+        const i18nlol = {
+            cs: {
+                title: 'Datum odeslání',
+                asap: 'Co nejdříve',
+                custom: 'Vybrat datum',
+                select: 'Vybrat',
+                selectDate: 'Vybrat datum',
+                selectTime: 'Vybrat čas',
+                selectTimeAddon: 'Upřesnit výběr',
+                chooseDate: 'Vyberte datum',
+                timeAddonOptions: {
+                    asap: 'Doručit v první hodině vybraného časového okna',
+                    withinSlot: 'Doručit kdykoliv ve vybraném časovém okně',
+                    anytime: 'Na vybraném časovém okně mi nezáleží. Doručit kdykoliv do 16:00.',
+                },
+                dayNames: {
+                    mon: 'Pondělí',
+                    tue: 'Úterý',
+                    wed: 'Středa',
+                    thu: 'Čtvrtek',
+                    fri: 'Pátek',
+                    sat: 'Sobota',
+                    sun: 'Neděle',
+                },
+                selectedDate: 'Zvolené datum: ',
+                warningSelect: 'Vyberte prosím požadované datum.',
+                warningSelectTime: 'Vyberte prosím požadované datum a čas.',
+                warningSelectAsap: 'Vyberte prosím požadované datum, případně zvolte možnost Co nejdříve.',
+                warningSelectTimeAsap: 'Vyberte prosím požadované datum a čas, případně zvolte možnost Co nejdříve.',
+                noSlotsForDayAnymore: 'Na tento den už nejsou k dispozici žádná časová okna',
+            },
+            sk: {
+                title: 'Dátum odoslania',
+                asap: 'Čo najskôr',
+                custom: 'Vybrať dátum',
+                select: 'Vybrať',
+                selectDate: 'Vybrať dátum',
+                selectTime: 'Vybrať čas',
+                selectTimeAddon: 'Upresnit výber',
+                chooseDate: 'Vyberte datum',
+                timeAddonOptions: {
+                    asap: 'Doručit v první hodině vybraného časového okna',
+                    withinSlot: 'Doručit kdykoliv ve vybraném časovém okně',
+                    anytime: 'Na vybraném časovém okně mi nezáleží. Doručit kdykoliv do 16:00.',
+                },
+                dayNames: {
+                    mon: 'Pondelok',
+                    tue: 'Utorok',
+                    wed: 'Streda',
+                    thu: 'Štvrtok',
+                    fri: 'Piatok',
+                    sat: 'Sobota',
+                    sun: 'Nedeľa',
+                },
+                selectedDate: 'Zvolený dátum: ',
+                warningSelect: 'Vyberte prosím požadovaný dátum.',
+                warningSelectTime: 'Vyberte prosím požadovaný dátum a čas.',
+                warningSelectAsap: 'Vyberte prosím požadovaný dátum, prípadne zvoľte možnosť Čo najskôr.',
+                warningSelectTimeAsap: 'Vyberte prosím požadovaný dátum a čas, prípadne zvoľte možnosť Čo najskôr.',
+                noSlotsForDayAnymore: 'Na tento deň už nie sú k dispozícii žiadne časové okná',
+            },
+            en: {
+                title: 'Shipping date',
+                asap: 'As soon as possible',
+                custom: 'Pick a day',
+                select: 'Select',
+                selectDate: 'Select a day',
+                selectTime: 'Select time',
+                selectTimeAddon: 'Specify time',
+                chooseDate: 'Pick a day',
+                timeAddonOptions: {
+                    asap: 'During the first hour of the time slot',
+                    withinSlot: 'Any time during the selected time slot',
+                    anytime: 'Anytime during the day, regardless of the time slot (delivery by 16:00)',
+                },
+                dayNames: {
+                    mon: 'Monday',
+                    tue: 'Tuesday',
+                    wed: 'Wednesday',
+                    thu: 'Thursday',
+                    fri: 'Friday',
+                    sat: 'Saturday',
+                    sun: 'Sunday',
+                },
+                selectedDate: 'Selected date: ',
+                warningSelect: 'Please select a date.',
+                warningSelectTime: 'Plase select a date and time.',
+                warningSelectAsap: 'Please select a date, or select the As soon as possible option.',
+                warningSelectTimeAsap: 'Plase select a date and time, or select the As soon as possible option.',
+                noSlotsForDayAnymore: 'No delivery slots are available for this day any more',
+            },
+            vi: {
+                title: 'Ngày giao hàng',
+                asap: 'Sớm nhất có thể',
+                custom: 'Chọn ngày',
+                select: 'Chọn',
+                selectDate: 'Chọn ngày',
+                selectTime: 'Chọn giờ',
+                selectTimeAddon: 'Xác định giờ',
+                timeAddonOptions: {
+                    asap: 'During the first hour of the time slot',
+                    withinSlot: 'Any time during the selected time slot',
+                    anytime: 'Anytime during the day, regardless of the time slot (delivery by 16:00)',
+                },
+                chooseDate: 'Chọn ngày',
+                dayNames: {
+                    mon: 'Thứ hai',
+                    tue: 'Thứ ba',
+                    wed: 'Thứ tư',
+                    thu: 'Thứ năm',
+                    fri: 'Thứ sáu',
+                    sat: 'Thứ bảy',
+                    sun: 'Chủ nhật',
+                },
+                selectedDate: 'Chọn ngày: ',
+                warningSelect: 'Hãy chọn ngày giao.',
+                warningSelectTime: 'Hãy chọn ngày và giờ giao.',
+                warningSelectAsap: 'Hãy chọn ngày giao, hoặc chọn Sớm nhất có thể.',
+                warningSelectTimeAsap: 'Hãy chọn ngày và giờ giao, hoặc chọn Sớm nhất có thể.',
+                noSlotsForDayAnymore: 'Không còn khả năng giao hàng cho ngày này nữa',
+            },
+        };
+        i18nlol['de'] = i18nlol['en'];
+        i18nlol['hu'] = i18nlol['en'];
+        i18nlol['ro'] = i18nlol['en'];
+        fvstudio_shippingdate.i18n = i18nlol;
+
+        function deliveryTimesOptionsGenerator(shippingMethodGuid = null) {
+            let increment = state.settings.deliveryTimesSlotSize || 1;
+            if (state.settings.addons
+                && state.settings.addons.shippingMethodSpecificOptions === true
+                && shippingMethodGuid != null) {
+                const methodTimes = state.settings.deliveryTimesSlotSizeShippingMethods.find(function(item) { return item.guid === shippingMethodGuid; });
+                increment = methodTimes ? Number(methodTimes.size) : 1;
+            }
+            if (increment === 0) {
+                increment = 1;
+            }
+
+            let offsetMinutes = state.settings.deliveryTimesSlotStartOffset || 0;
+            if (state.settings.addons
+                && state.settings.addons.shippingMethodSpecificOptions === true
+                && shippingMethodGuid != null) {
+                    const methodTimes = state.settings.deliveryTimesSlotStartOffsetShippingMethods.find(function(item) { return item.guid === shippingMethodGuid; });
+                    offsetMinutes = methodTimes ? Number(methodTimes.value) : 0;
+            }
+
+            const slots = {};
+
+            const time = moment().utc().set({ hour: 0, minute: 0, second: 0 });
+            if (offsetMinutes > 0) {
+                time.add(offsetMinutes, 'minutes');
+            }
+            const nowDay = time.format('D');
+            while(time.format('D') === nowDay) {
+                const start = time.clone();
+                time.add(increment, 'hours');
+                const end = time.clone();
+                slots['t' + start.format('HHmm') + end.format('HHmm')] = start.format('HH:mm') + ' - ' + end.format('HH:mm');
+            }
+
+            return slots;
+        }
+
+        function generateShopId() {
+            return (function() {
+                const b = [];
+                for (let i = 0; i < location.origin.length; i++) b.push(location.origin.charCodeAt(i));
+                return b.join('');
+            })();
+        }
+
+        function isDateHoliday(momentDate) {
+            // AUTHOR: https://github.com/SmallhillCZ/czech-holidays
+            const holidayDates = {
+                cs: [
+                    { d: 1, m: 1 },
+                    { d: 1, m: 5 },
+                    { d: 8, m: 5 },
+                    { d: 5, m: 7 },
+                    { d: 6, m: 7 },
+                    { d: 28, m: 9 },
+                    { d: 28, m: 10 },
+                    { d: 17, m: 11 },
+                    { d: 24, m: 12 },
+                    { d: 25, m: 12 },
+                    { d: 26, m: 12 },
+                ],
+                sk:  [
+                    { d: 1, m: 1 },
+                    { d: 6, m: 1 },
+                    { d: 1, m: 5 },
+                    { d: 8, m: 5 },
+                    { d: 5, m: 7 },
+                    { d: 29, m: 8 },
+                    { d: 1, m: 9 },
+                    { d: 15, m: 9 },
+                    { d: 1, m: 11 },
+                    { d: 17, m: 11 },
+                    { d: 24, m: 12 },
+                    { d: 25, m: 12 },
+                    { d: 26, m: 12 },
+                ],
+                en: [],
+            };
+            // https://gist.github.com/johndyer/0dffbdd98c2046f41180c051f378f343
+            function getEaster(year) {
+                var f = Math.floor,
+                // Golden Number - 1
+                G = year % 19, C = f(year / 100),
+                // related to Epact
+                H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+                // number of days from 21 March to the Paschal full moon
+                I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
+                // weekday for the Paschal full moon
+                J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7,
+                // number of days from 21 March to the Sunday on or before the Paschal full moon
+                L = I - J, month = 3 + f((L + 40) / 44), day = L + 28 - 31 * f(month / 4);
+                return { m: month, d: day };
+            }
+            function HolidaysList(year, lang) {
+                const holidays = holidayDates[lang] ? JSON.parse(JSON.stringify(holidayDates[lang])) : [];
+                const easterSunday = getEaster(year);
+                const easterFridayDate = new Date(year, easterSunday.m - 1, easterSunday.d);
+                easterFridayDate.setDate(easterFridayDate.getDate() - 2);
+                const easterMondayDate = new Date(year, easterSunday.m - 1, easterSunday.d);
+                easterMondayDate.setDate(easterMondayDate.getDate() + 1);
+                holidays.push({ d: easterFridayDate.getDate(), m: easterFridayDate.getMonth() + 1 });
+                holidays.push({ d: easterMondayDate.getDate(), m: easterMondayDate.getMonth() + 1 });
+                holidays.sort(function (a, b) { return a.m - b.m || a.d - b.d; });
+                return holidays;
+            }
+            const year = momentDate.format('YYYY');
+            const holidays = HolidaysList(Number(year), language);
+            const d = Number(momentDate.format('D'));
+            const m = Number(momentDate.format('M'));
+            return holidays.some(function (item) { return item.d === d && item.m === m; });
+        }
+
+        function generateHTMLWrapper(headerText, products) {
+            $('.fv-datum').remove();
+
+            let dateOptionsHTML = '';
+
+            let daysToSAdd = 14;
+            let addDates = [];
+            if (USE_DATEPICKER_DROPDOWN) {
+                daysToSAdd = 31 * 6;
+            }
+            let addedDays = 0;
+            let dayIndex = 1;
+            let skipDays = state.settings.shippingDelay == null ? 1 : state.settings.shippingDelay;
+            let skippedDays = 1;
+            let altSkipDays = false; // Days count for every day, not only the allowed days
+            const now = moment();
+
+            let showTimePicker = true;
+            let showDatePicker = true;
+
+            ORDER_SLOTS_ENABLED = state.settings.addons
+                && state.settings.addons.timeSlotsCapacity === true;
+
+            const SHIPPING_METHODS_ENABLED = state.settings.addons
+                && state.settings.addons.shippingMethodSpecificOptions === true;
+            let selectedShippingMethodName = null;
+            let selectedShippingMethodGuid = null;
+            let selectedShippingMethodId = null;
+            if (SHIPPING_METHODS_ENABLED) {
+                if (['Rock', 'Soul', 'Pop'].includes(template)) {
+                    const shippingMethod = $('#order-shipping-methods input[name="shippingId"]:checked');
+                    selectedShippingMethodName = shippingMethod.siblings('strong.shipping-billing-name').text();
+                    selectedShippingMethodGuid = shippingMethod.attr('data-guid');
+                } else {
+                    const shippingMethod = $('#order-shipping-methods input[name="shippingId"]:checked');
+                    selectedShippingMethodName = shippingMethod.siblings('label').find('.payment-info b').text();
+                    selectedShippingMethodGuid = shippingMethod.attr('data-guid');
+                    selectedShippingMethodId = shippingMethod.attr('value');
+                }
+            }
+
+            if (SHIPPING_METHODS_ENABLED && state.settings.shippingDelayShippingMethods != null) {
+                const methodDelay = state.settings.shippingDelayShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                skipDays = methodDelay ? methodDelay.value : skipDays;
+            }
+
+            let cursomRollDayThreshold = 0;
+            if (location.origin.includes('www.kytkyzestatku.cz')) {
+                const shippingMethodsToLock = [
+                    '2ec88ea7-3fb0-11e2-a723-705ab6a2ba75',
+                    'f7e5eed2-6059-11ed-90ab-b8ca3a6a5ac4'
+                ];
+                if (shippingMethodsToLock.includes(selectedShippingMethodGuid)) {
+                    cursomRollDayThreshold = 16;
+                    if (
+                        Number(now.format('H')) > cursomRollDayThreshold ||
+                        (
+                            Number(now.format('H')) === cursomRollDayThreshold &&
+                            Number(now.format('m')) > 30
+                        )
+                    ) {
+                        now.add(1, 'days');
+                    }
+                }
+            }
+            if (location.origin.includes('www.pekarstvirozvoz.cz')) {
+                cursomRollDayThreshold = 15;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.rodinnafarma.com')) {
+                cursomRollDayThreshold = 9;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('eshop.votreplaisir.cz')) {
+                cursomRollDayThreshold = 18;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.jsemdole.cz')) {
+                cursomRollDayThreshold = 14;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.relax-postele.cz')) {
+                cursomRollDayThreshold = 15;
+                if (['Sat', 'Sun'].includes(now.format('ddd')) || Number(now.format('H')) >= cursomRollDayThreshold) {
+                    switch (now.format('ddd')) {
+                        case 'Fri':
+                            now.add(3, 'days');
+                            break;
+                        case 'Sat':
+                            now.add(2, 'days');
+                            break;
+                        default:
+                            now.add(1, 'days');
+                            break;
+                    }
+                }
+            }
+            if (location.origin.includes('eshop.crosscafe.cz')) {
+                cursomRollDayThreshold = 16;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.brnenskyfrgal.cz')) {
+                cursomRollDayThreshold = 14;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.cafis.cz')) {
+                cursomRollDayThreshold = 18;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.pletynka.cz')) {
+                cursomRollDayThreshold = 17;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.baron.cz')) {
+                cursomRollDayThreshold = 12;
+                /*if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }*/
+                if (['Sat', 'Sun'].includes(now.format('ddd')) || Number(now.format('H')) >= cursomRollDayThreshold) {
+                    switch (now.format('ddd')) {
+                        case 'Fri':
+                            now.add(3, 'days');
+                            break;
+                        case 'Sat':
+                            now.add(2, 'days');
+                            break;
+                        default:
+                            now.add(1, 'days');
+                            break;
+                    }
+                }
+            }
+            if (location.origin.includes('www.iboxik.cz')) {
+                cursomRollDayThreshold = 16;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('537135.myshoptet.com')) {
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.desi.cz')) {
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('eshop.artebianca.cz')) {
+                cursomRollDayThreshold = 13;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.easy-catering.sk')) {
+                cursomRollDayThreshold = 11;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('533672.myshoptet.com')) {
+                cursomRollDayThreshold = 17;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.farmos.cz')) {
+                let shiftDays = 0;
+                if (now.format('ddd') === 'Tue') {
+                    shiftDays = 4;
+                } else {
+                    if (now.format('ddd') === 'Mon' && Number(now.format('H')) >= 23) {
+                        shiftDays = 5;
+                    } else {
+                        shiftDays = 3;
+                    }
+                }
+                if (selectedShippingMethodGuid === '80688d69-8bc9-11eb-90ab-b8ca3a6a5ac4' && shiftDays > 0) {
+                    // Doprava Streda
+                    shiftDays -= 1;
+                }
+                now.add(shiftDays, 'days');
+            }
+            if (location.origin.includes('www.jidlosem.cz')) {
+                cursomRollDayThreshold = 12;
+                if (
+                    (Number(now.format('H')) >= cursomRollDayThreshold && Number(now.format('mm')) > 30)
+                    || Number(now.format('H')) >= cursomRollDayThreshold + 1
+                ) {
+                    now.add(1, 'days');
+                    if (Number(now.format('d')) === 6) {
+                        now.add(2, 'days');
+                    }
+                    if (Number(now.format('d')) === 0) {
+                        now.add(1, 'days');
+                    }
+                } else {
+                    if (Number(now.format('d')) === 6) {
+                        now.add(2, 'days');
+                    }
+                    if (Number(now.format('d')) === 0) {
+                        now.add(1, 'days');
+                    }
+                }
+            }
+            if (location.origin.includes('eshop.iceland.cz')) {
+                daysToSAdd = 3;
+            }
+            if (location.origin.includes('www.warisch.cz')) {
+                daysToSAdd = 5;
+            }
+            if (location.origin.includes('www.sabilco.cz')) {
+                daysToSAdd = 2;
+            }
+            if (location.origin.includes('www.warisch.cz')) {
+                daysToSAdd = 5;
+            }
+            if (location.origin.includes('www.topflor.cz')) {
+                daysToSAdd = 4;
+            }
+            if (location.origin.includes('www.obchod-kufry.cz')) {
+                daysToSAdd = 5;
+            }
+            if (location.origin.includes('www.masokrecek.cz')) {
+                daysToSAdd = 14;
+            }
+            if (location.origin.includes('www.mysakdomu.cz')) {
+                daysToSAdd = 90;
+            }
+            if (location.origin.includes('www.mrsalatoff.cz')) {
+                cursomRollDayThreshold = 18;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.vyhodnyrozvoz.cz')) {
+                cursomRollDayThreshold = 19;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('pribram.prodejnyzeman.cz') && Array.isArray(state.settings.deliveryTimesShippingMethods)) {
+                const methodTimes = state.settings.deliveryTimesShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                if (methodTimes != null && Array.isArray(methodTimes.times)) {
+                    const firstHour = Number(methodTimes.times[0].substr(1, 2));
+                    cursomRollDayThreshold = firstHour - 2;
+                    if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                        now.add(1, 'days');
+                    }
+                }
+            }
+            // eshop.starobelskypivovar.cz
+            if (projectId === '416469') {
+                cursomRollDayThreshold = 15;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    if (now.format('ddd') === 'Thu') {
+                        now.add(2, 'days');
+                    } else {
+                        now.add(1, 'days');
+                    }
+                } else {
+                    if (now.format('ddd') === 'Fri') {
+                        now.add(1, 'days');
+                    }
+                }
+                if (selectedShippingMethodGuid === '8fdb2c89-3fae-11e2-a723-705ab6a2ba75') {
+                    // Pivovar ostrava
+                    daysToSAdd = 16;
+                } else {
+                    daysToSAdd = 8;
+                }
+            }
+            if (location.origin.includes('unknownshopfornow.janeviemus.cz')) {
+                altSkipDays = true;
+            }
+            if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                daysToSAdd = 4;
+            }
+            if (location.origin.includes('www.robertson.cz') && selectedShippingMethodGuid === '8fdb2c89-3fae-11e2-a723-705ab6a2ba75') {
+                daysToSAdd = 30;
+            }
+            // pekarstvijilek.cz
+            if (projectId === '418057') {
+                cursomRollDayThreshold = 14;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            //if (location.origin.includes('www.rodinnafarma.com')) {
+                //if (now.format('ddd') === 'Sat' && now.format('H') > 5) {
+                    //now.add(1, 'days');
+                //}
+            //}
+            if (location.origin.includes('www.bibifood.cz')) {
+                const limitedGuids = [
+                    'ad9749d2-8d3f-11ea-90ab-b8ca3a6a5ac4',
+                    '2ec88ea7-3fb0-11e2-a723-705ab6a2ba75',
+                    '8fdb2c89-3fae-11e2-a723-705ab6a2ba75',
+                    '660d3767-1c13-11eb-90ab-b8ca3a6a5ac4',
+                    '90dfbcd9-325a-11ec-90ab-b8ca3a6a5ac4'
+                ];
+                if (limitedGuids.includes(selectedShippingMethodGuid)) {
+                    skipDays = 0;
+                    switch (now.format('ddd')) {
+                        case 'Mon':
+                            now.add(1, 'days');
+                            break;
+                        case 'Tue':
+                            now.add(1, 'days');
+                            break;
+                        case 'Wed':
+                            now.add(5, 'days');
+                            break;
+                        case 'Thu':
+                            now.add(4, 'days');
+                            break;
+                        case 'Fri':
+                            now.add(3, 'days');
+                            break;
+                        case 'Sat':
+                            now.add(2, 'days');
+                            break;
+                        case 'Sun':
+                            now.add(1, 'days');
+                            break;
+                    }
+                }
+            }
+            if (location.origin.includes('www.rozvoz-kvetov.sk')) {
+                // Osobni odber
+                if (selectedShippingMethodGuid === '8fdb2c89-3fae-11e2-a723-705ab6a2ba75' || selectedShippingMethodGuid === '0f1a7087-34e9-11ec-a39f-002590dc5efc') {
+                    if (now.format('ddd') === 'Sun') {
+                        now.add(1, 'days');
+                    } else if (now.format('ddd') === 'Sat') {
+                        if (now.format('H') >= 13) {
+                            now.add(2, 'days');
+                        }
+                    } else {
+                        if (now.format('H') >= 17) {
+                            now.add(1, 'days');
+                        }
+                    }
+                }
+                // Kuryr SVK
+                if (selectedShippingMethodGuid === '9f77560d-6c02-11ec-b563-002590dc5efc') {
+                    if (now.format('H') >= 17) {
+                        now.add(1, 'days');
+                    }
+                }
+                // Kuryr BA
+                if (selectedShippingMethodGuid === '2ec88ea7-3fb0-11e2-a723-705ab6a2ba75') {
+                    if (now.format('H') >= 17) {
+                        now.add(1, 'days');
+                    }
+
+                }
+            }
+            if (location.origin.includes('www.masokrecek.cz')) {
+                cursomRollDayThreshold = 11;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.dobrereznictvi.cz')) {
+                if (selectedShippingMethodId !== '321') {
+                    cursomRollDayThreshold = 12;
+                    if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                        now.add(1, 'days');
+                    }
+                }
+            }
+            if (location.origin.includes('eshop.mafita.cz')) {
+                if (selectedShippingMethodGuid === 'ff2516f5-cc51-11ec-90ab-b8ca3a6a5ac4' || selectedShippingMethodGuid === '371abe56-cc52-11ec-90ab-b8ca3a6a5ac4') {
+                    skipDays = 0;
+                    switch (now.format('ddd')) {
+                        case 'Mon':
+                            now.add(5, 'days');
+                            break;
+                        case 'Tue':
+                            now.add(4, 'days');
+                            break;
+                        case 'Wed':
+                            now.add(3, 'days');
+                            break;
+                        case 'Thu':
+                            now.add(2, 'days');
+                            break;
+                        case 'Fri':
+                            now.add(8, 'days');
+                            break;
+                        case 'Sat':
+                            now.add(7, 'days');
+                            break;
+                        case 'Sun':
+                            now.add(6, 'days');
+                            break;
+                    }
+                }
+            }
+            if (location.origin.includes('www.safework.cz')) {
+                const allowedCategories = [
+                    'suchý led',
+                    'termoboxy',
+                ];
+                const products = shoptet.tracking.productsList;
+                const isEligibleCategory = Object.entries(products).some(item => {
+                    const entry = item[1];
+                    const eligible = allowedCategories.some(cat => entry.content_category.toLowerCase().includes(cat));
+                    if (eligible) {
+                        return dataLayer[0].shoptet.cart.some(cItem => cItem.code === entry.content_ids[0])
+                    }
+                    return false;
+                });
+                if (isEligibleCategory === false) {
+                    return;
+                }
+
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.safework.sk')) {
+                const allowedCategories = [
+                    'suchý ľad',
+                    'termoboxy',
+                ];
+                const products = shoptet.tracking.productsList;
+                const isEligibleCategory = Object.entries(products).some(item => {
+                    const entry = item[1];
+                    const eligible = allowedCategories.some(cat => entry.content_category.toLowerCase().includes(cat));
+                    if (eligible) {
+                        return dataLayer[0].shoptet.cart.some(cItem => cItem.code === entry.content_ids[0])
+                    }
+                    return false;
+                });
+                if (isEligibleCategory === false) {
+                    return;
+                }
+
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.suchylad.eu')) {
+                const allowedCategories = [
+                    'suchý ľad',
+                    'termoboxy',
+                ];
+                const products = shoptet.tracking.productsList;
+                const isEligibleCategory = Object.entries(products).some(item => {
+                    const entry = item[1];
+                    const eligible = allowedCategories.some(cat => entry.content_category.toLowerCase().includes(cat));
+                    if (eligible) {
+                        return dataLayer[0].shoptet.cart.some(cItem => cItem.code === entry.content_ids[0])
+                    }
+                    return false;
+                });
+                if (isEligibleCategory === false) {
+                    return;
+                }
+
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.suchy-led.cz')) {
+                const allowedCategories = [
+                    'suchý led',
+                    'termoboxy',
+                ];
+                const products = shoptet.tracking.productsList;
+                const isEligibleCategory = Object.entries(products).some(item => {
+                    const entry = item[1];
+                    const eligible = allowedCategories.some(cat => entry.content_category.toLowerCase().includes(cat));
+                    if (eligible) {
+                        return dataLayer[0].shoptet.cart.some(cItem => cItem.code === entry.content_ids[0])
+                    }
+                    return false;
+                });
+                if (isEligibleCategory === false) {
+                    return;
+                }
+
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.termoboxy.cz') || location.origin.includes('www.termoboxy.sk')) {
+                const allowedCategories = [
+                    'suchý led',
+                    'termoboxy',
+                ];
+                const products = shoptet.tracking.productsList;
+                const isEligibleCategory = Object.entries(products).some(item => {
+                    const entry = item[1];
+                    const eligible = allowedCategories.some(cat => entry.content_category.toLowerCase().includes(cat));
+                    if (eligible) {
+                        return dataLayer[0].shoptet.cart.some(cItem => cItem.code === entry.content_ids[0])
+                    }
+                    return false;
+                });
+                if (isEligibleCategory === false) {
+                    return;
+                }
+
+                cursomRollDayThreshold = 12;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.mychef.kitchen') || location.origin.includes('gourmet.mychef.kitchen')) {
+                altSkipDays = true;
+                if (now.format('ddd') === 'Fri' && Number(now.format('H')) >= 14) {
+                    now.add(1, 'days');
+                }
+                if (now.format('ddd') === 'Sat') {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.freezypeezy.cz')) {
+                cursomRollDayThreshold = 14;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+            if (location.origin.includes('www.tamda-chlazenep.eu') || location.origin.includes('www.tamda-chlazeneu.eu')) {
+                cursomRollDayThreshold = 15;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.eatkrabicky.cz')) {
+                altSkipDays = true;
+            }
+
+            // matejovopekarstvi.cz
+            if (location.origin.includes('640698.myshoptet.com') || location.origin.includes('matejovopekarstvi.cz')) {
+                cursomRollDayThreshold = 11;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.partysluzby.cz')) {
+                daysToSAdd = 60;
+                cursomRollDayThreshold = 9;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(1, 'days');
+                }
+                if (now.format('ddd') === 'Sat') {
+                    now.add(2, 'days');
+                } else if (now.format('ddd') === 'Sun') {
+                    now.add(1, 'days');
+                }
+            }
+
+            if (location.origin.includes('www.dk-obchod.cz')) {
+                cursomRollDayThreshold = 15;
+                if (Number(now.format('H')) >= cursomRollDayThreshold) {
+                    now.add(2, 'days');
+                }
+            }
+
+            if (skipDays === 0) {
+                skipDays = 0;
+                skippedDays = 0;
+                dayIndex = 0;
+            }
+
+            let enabledDeliveryDays = state.settings.deliveryDays;
+            if (SHIPPING_METHODS_ENABLED) {
+                const methodDays = state.settings.deliveryDaysShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                enabledDeliveryDays = methodDays ? methodDays.days : [];
+            }
+
+            let exceptionsAllowed = state.settings.exceptionsAvailable;
+            if (SHIPPING_METHODS_ENABLED && state.settings.exceptionsAvailableShippingMethods.some(item => item.guid === selectedShippingMethodGuid)) {
+                exceptionsAllowed = state.settings.exceptionsAvailableShippingMethods.filter(item => item.guid === selectedShippingMethodGuid).map(item => item.date);
+            }
+            exceptionsAllowed.sort();
+
+            let exceptionAllowedOnly = false;
+            if (enabledDeliveryDays.length === 0 && exceptionsAllowed.length) {
+                daysToSAdd = exceptionsAllowed.length - skipDays;
+                exceptionAllowedOnly = true;
+            }
+
+            let stopAdd = false;
+            if (enabledDeliveryDays.length || exceptionsAllowed.length) {
+                while(addedDays < daysToSAdd) {
+                    const day = now.clone().add(dayIndex, 'days');
+                    let dayName = day.format('ddd');
+                    const isHoliday = isDateHoliday(day);
+                    if (isHoliday) {
+                        dayName = 'hol';
+                    }
+
+                    let isExceptionAllowed = state.settings.exceptionsAvailable.includes(day.format('YYYY-MM-DD'));
+                    let isExceptionDisallowed = state.settings.exceptionsUnavailable.includes(day.format('YYYY-MM-DD'));
+
+                    if (SHIPPING_METHODS_ENABLED) {
+                        if (!isExceptionAllowed) {
+                            isExceptionAllowed = state.settings.exceptionsAvailableShippingMethods.some(item => item.guid === selectedShippingMethodGuid && item.date === day.format('YYYY-MM-DD'));
+                        }
+                        if (!isExceptionDisallowed) {
+                            isExceptionDisallowed = state.settings.exceptionsUnavailableShippingMethods.some(item => item.guid === selectedShippingMethodGuid && item.date === day.format('YYYY-MM-DD'));
+                        }
+                    }
+
+                    let isEnabled = enabledDeliveryDays
+                        .map(function(item) {
+                            return item;
+                        })
+                        .includes(dayName.toLowerCase());
+
+                    if (isExceptionDisallowed) {
+                        isEnabled = false;
+                    }
+                    if (isExceptionAllowed) {
+                        isEnabled = true;
+                    }
+
+                    if (
+                        exceptionAllowedOnly
+                        && day.format('YYYY-MM-DD') > exceptionsAllowed[exceptionsAllowed.length - 1]
+                    ) {
+                        break;
+                    }
+
+                    if (location.origin.includes('www.veselabrambora.cz') && isEnabled) {
+                        const daysDiff = day.diff(now, 'days');
+                        if (daysDiff < 2 || (now.format('ddd') === 'Fri' && daysDiff <= 3) || (now.format('ddd') === 'Sat' && daysDiff <= 2)) {
+                            isEnabled = false;
+                        }
+                    }
+
+                    if (altSkipDays === true && skippedDays < skipDays) {
+                        skippedDays++;
+                        dayIndex++;
+                        continue;
+                    }
+
+                    if (isEnabled) {
+                        if (altSkipDays === false && skippedDays < skipDays) {
+                            skippedDays++;
+                        } else {
+                            addedDays++;
+
+                            if (location.origin.includes('pribram.prodejnyzeman.cz') && now.format('W') !== day.format('W')) {
+                                stopAdd = true;
+                            }
+
+                            if (location.origin.includes('www.zezahora.sk')) {
+                                const nowCompare = now.clone().set({hour: 12, minute: 0});
+                                const dayCompare = day.clone().set({hour: 12, minute: 0});
+                                const hrDiff = dayCompare.diff(nowCompare, 'hours');
+                                if (hrDiff <= 24) {
+                                    dayIndex++;
+                                    continue;
+                                }
+                            }
+
+                            if (stopAdd) {
+                                continue;
+                            }
+
+                            dateOptionsHTML += '<option value="' + day.format('YYYY-MM-DD') + '">' + i18nlol[language].dayNames[day.format('ddd').toLowerCase()] + ' ' + day.format('D. M.') + '</option>';
+                            addDates.push(day.format('YYYY-MM-DD'));
+                        }
+                    }
+
+                    dayIndex++;
+                }
+            } else {
+                showDatePicker = false;
+            }
+            state.shippingMethodDateSelectEnabled = showDatePicker;
+
+            const TIMES_ENABLED = state.settings.addons
+                && state.settings.addons.times === true
+                && state.settings.deliveryTimesEnabled === true;
+
+            let timeOptionsHTML = '';
+            let enabledDeliveryTimes = null;
+            if (TIMES_ENABLED && state.settings.deliveryTimes) {
+                enabledDeliveryTimes = state.settings.deliveryTimes;
+                let timeDisplayType = state.settings.deliveryTimesType;
+                if (SHIPPING_METHODS_ENABLED) {
+                    const methodTimes = state.settings.deliveryTimesShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                    enabledDeliveryTimes = methodTimes ? methodTimes.times : [];
+                    if (methodTimes) {
+                        deliveryTimesOptions = deliveryTimesOptionsGenerator(methodTimes.guid);
+                        sessionStorage.setItem('fv_selectedshippingmethod', methodTimes.guid);
+                    }
+
+                    const methodDisplayType = state.settings.deliveryTimesTypeShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                    if (methodDisplayType) {
+                        timeDisplayType = methodDisplayType.type;
+                    } else {
+                        timeDisplayType = 'range';
+                    }
+                }
+                // Slot display type is not supported for capacity
+                if (state.settings.addons.timeSlotsCapacity) {
+                    timeDisplayType = 'range';
+                }
+
+                if (SHIPPING_METHODS_ENABLED && enabledDeliveryTimes.length === 0) {
+                    showTimePicker = false;
+                }
+
+                const exactTimesAdded = [];
+                enabledDeliveryTimes
+                    .map(function(item) {
+                        return item;
+                    })
+                    .sort()
+                    .forEach(function(item) {
+                        if (timeDisplayType === 'range') {
+                            timeOptionsHTML += '<option value="' + item + '">' + deliveryTimesOptions[item] + '</option>';
+                        } else {
+                            const timeStart = item.substr(1, 4);
+                            const timeEnd = item.substr(5, 4);
+                            if (!exactTimesAdded.includes(timeStart)) {
+                                timeOptionsHTML += '<option value="' + item + '_exact_' + timeStart + '">' + timeStart[0]+timeStart[1] + ':' + timeStart[2]+timeStart[3] + '</option>';
+                                exactTimesAdded.push(timeStart);
+                            }
+                            if (!exactTimesAdded.includes(timeEnd)) {
+                                timeOptionsHTML += '<option value="' + item + '_exact_' + timeEnd + '">' + timeEnd[0]+timeEnd[1] + ':' + timeEnd[2]+timeEnd[3] + '</option>';
+                                exactTimesAdded.push(timeEnd);
+                            }
+                        }
+                    });
+            }
+
+            const CUSTOM_LABELS_ENABLED = state.settings.addons
+                && state.settings.addons.customLabels === true;
+
+            const headerTitle = state.headerText && state.headerText
+                ? (typeof state.headerText === 'string' ? state.headerText : (state.headerText[language] ? state.headerText[language] : i18nlol[language].title))
+                : i18nlol[language].title;
+
+            const asapLabel = CUSTOM_LABELS_ENABLED && state.asapLabel
+                ? (typeof state.asapLabel === 'string' ? state.asapLabel : (state.asapLabel[language] ? state.asapLabel[language] : i18nlol[language].asap))
+                : i18nlol[language].asap;
+            const asapTooltip = CUSTOM_LABELS_ENABLED && state.asapTooltip
+                ? (typeof state.asapTooltip === 'string' ? state.asapTooltip : (state.asapTooltip[language] ? state.asapTooltip[language] : null))
+                : null;
+            const datePickerTooltip = CUSTOM_LABELS_ENABLED && state.datePickerTooltip
+                ? (typeof state.datePickerTooltip === 'string' ? state.datePickerTooltip : (state.datePickerTooltip[language] ? state.datePickerTooltip[language] : null))
+                : null;
+            const dateSelectLabel = CUSTOM_LABELS_ENABLED && state.dateSelectLabel
+                ? (typeof state.dateSelectLabel === 'string' ? state.dateSelectLabel : (state.dateSelectLabel[language] ? state.dateSelectLabel[language] : i18nlol[language].custom))
+                : i18nlol[language].custom;
+
+            let datePickerHTML = '' +
+                '<select name="datepicker" id="fvDeliveryDaySelect" class="form-control" onchange="fvstudio_shippingdate.onDeliveryDateChange(\'date\', true)">' +
+                '   <option value="none" selected="selected">' + i18nlol[language].selectDate + '</option>' +
+                    dateOptionsHTML +
+                '</select>';
+            if (USE_DATEPICKER_DROPDOWN) {
+                datePickerHTML = '<input name="datepicker" class="datepicker fv-datepicker form-control" id="fvDeliveryDaySelect" placeholder="' + i18nlol[language].chooseDate + '" autocomplete="off" onchange="fvstudio_shippingdate.onDeliveryDateChange(\'date\', true, true)" readonly="readonly">';
+            }
+
+            let timePickerHTML = '' +
+                '<select name="timepicker" id="fvDeliveryTimeSelect" class="form-control" onchange="fvstudio_shippingdate.onDeliveryDateChange(\'time\', false)">' +
+                '   <option value="none" selected="selected">' + i18nlol[language].selectTime + '</option>' +
+                    timeOptionsHTML +
+                '</select>';
+            if (location.origin.includes('www.brnenskyfrgal.cz')) {
+                timePickerHTML = '' +
+                '<div class="xform-control" style="width:100%;max-width:400px">'+
+                    '<select name="timepicker" id="fvDeliveryTimeSelect" class="form-control" onchange="fvstudio_shippingdate.onDeliveryDateChange(\'time\', false)">' +
+                    '   <option value="none" selected="selected">' + i18nlol[language].selectTime + '</option>' +
+                        timeOptionsHTML +
+                    '</select>' +
+                    '<select name="timeaddonpicker" id="fvDeliveryTimeAddonSelect" class="form-control" onchange="fvstudio_shippingdate.onDeliveryDateChange(\'time\', false)">' +
+                    '   <option value="none" selected="selected">' + i18nlol[language].selectTimeAddon + '</option>' +
+                    '   <option value="asap">' + i18nlol[language].timeAddonOptions.asap + '</option>' +
+                    '   <option value="withinSlot">' + i18nlol[language].timeAddonOptions.withinSlot + '</option>' +
+                    '   <option value="anytime">' + i18nlol[language].timeAddonOptions.anytime + '</option>' +
+                    '</select>' +
+                '</div>';
+            }
+
+            EXCP_HIDE_ASAP = state.settings.addons.hideAsap === true;
+            if (!EXCP_HIDE_ASAP && state.settings.showAsapOutsideHours == true && enabledDeliveryTimes != null) {
+                let showAsap = false;
+                const now = moment().format('HHmm');
+                if (addDates.includes(moment().format('YYYY-MM-DD'))) {
+                    enabledDeliveryTimes.forEach((item) => {
+                        const timeStart = item.substr(1, 4);
+                        const timeEnd = item.substr(5, 4) === '0000' ? '2359' : item.substr(5, 4);
+                        if (timeStart <= now && timeEnd >= now) {
+                            showAsap = true;
+                        }
+                    });
+                }
+                EXCP_HIDE_ASAP = !showAsap;
+            }
+
+            let displayPickerForMethod = 'yes';
+            const methodDisplayPicker = state.settings.deliverySelectEnabledShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+            if (SHIPPING_METHODS_ENABLED && methodDisplayPicker) {
+                displayPickerForMethod = methodDisplayPicker.enabled;
+            }
+            if (displayPickerForMethod === 'no') {
+                $('.fv-datum').remove();
+                return;
+            }
+
+            if (['Rock', 'Soul', 'Pop'].includes(template)) {
+                const shippingHTML =
+                    '' +
+                    '<div class="f-border checkout-single-box fv-datum' + (TIMES_ENABLED ? ' fv-datum-cas' : '') + '">' +
+                    '    <legend>' + headerTitle + '</legend>' +
+                    '    <div class="f-border-in fv-datum-text">' +
+                    '        <div id="deliveryPick1" class="no-payu radio-wrapper fv-datum-popis active" data-id="deliveryPick1" data-idx="0" onclick="fvstudio_shippingdate.selectDelivery(0)" style="' + (EXCP_HIDE_ASAP || ORDER_SLOTS_ENABLED ? 'display: none' : '') + '">' +
+                    '           <input type="radio" name="shippingDate" value="asap" id="delivery-pick-1" data-code="pick-date" class="" checked="checked">' +
+                    '               <strong class="fv-datum-name">' + asapLabel + '</strong>' +
+                                    (asapTooltip ? '<span class="fv-asap-tooltip old-template" title="' + asapTooltip + '" data-placement="' + (window.innerWidth < 768 ? 'bottom' : 'top') + '" data-original-title="' + asapTooltip + '">&nbsp;</span>' : '') +
+                    '           </input>' +
+                    '        </div>' +
+                    '        <div id="deliveryPick2" class="no-payu radio-wrapper fv-datepicker" style="' + (showDatePicker === false ? 'display:none' : '') + '"  data-id="deliveryPick2" data-idx="1" onclick="fvstudio_shippingdate.selectDelivery(1)">' +
+                    '           <input type="radio" name="shippingDate" value="custom" id="delivery-pick-2" data-code="pick-date" class="">' +
+                    '               <strong class="fv-datum-name">' + dateSelectLabel + '</strong>' +
+                                    datePickerHTML +
+                                    (TIMES_ENABLED && showTimePicker === true ? timePickerHTML : '') +
+                                    (datePickerTooltip ? '<span class="fv-asap-tooltip old-template" title="' + datePickerTooltip + '" data-placement="' + (window.innerWidth < 768 ? 'bottom' : 'top') + '" data-original-title="' + datePickerTooltip + '">&nbsp;</span>' : '') +
+                    '           </input>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>';
+
+                if (location.origin.includes('www.rybizak.cz')) {
+                    $(shippingHTML).insertBefore("#order-step-2 #order-right fieldset:nth-child(1)");
+                    $('.fv-datum').css('margin-top', '10px');
+                    $('.fv-datum').show();
+                    $('<input type="button" id="mock-submit-order" value="Odeslat objednávku" class="b-send-order normal button success" style="display:none" onclick="fvstudio_shippingdate.empty_deliveryday_alert()">').insertAfter('#submit-order');
+                } else {
+                    $(shippingHTML).insertBefore("#order-left > fieldset:nth-child(1)");
+                }
+            } else {
+                const shippingHTML =
+                    '' +
+                    '<div class="box box-sm box-bg-default co-box fv-datum' + (TIMES_ENABLED === true ? ' fv-datum-cas' : '') + '">' +
+                    '    <h4 class="order-icon order-delivery fv-datum-nadpis">' + headerTitle + '</h4>' +
+                    '    <div class="fv-datum-text">' +
+                    '        <div id="deliveryPick1" class="radio-wrapper active' + (showDatePicker === false ? ' only-child' : '') + '" data-id="deliveryPick1" onclick="fvstudio_shippingdate.selectDelivery(0)" style="' + (EXCP_HIDE_ASAP || ORDER_SLOTS_ENABLED ? 'display: none' : '') + '">' +
+                    '           <input type="radio" name="shippingDate" value="asap" id="delivery-pick-1" data-code="pick-date" class="" checked="checked">' +
+                    '           <label for="delivery-pick-1">' +
+                    '               <span class="payment-info"><b>' + asapLabel + '</b></span>' +
+                                    (asapTooltip ? '<span class="fv-asap-tooltip" title="' + asapTooltip + '" data-placement="' + (window.innerWidth < 768 ? 'bottom' : 'top') + '" data-original-title="' + asapTooltip + '">&nbsp;</span>' : '') +
+                    '           </label>' +
+                    '           </input>' +
+                    '        </div>' +
+                    '        <div id="deliveryPick2" class="radio-wrapper" style="' + (showDatePicker === false ? 'display:none;' : '') + '" data-id="deliveryPick2" onclick="fvstudio_shippingdate.selectDelivery(1)">' +
+                    '           <input type="radio" name="shippingDate" value="custom" id="delivery-pick-2" data-code="pick-date" class="">' +
+                    '               <label for="delivery-pick-2" style="' + (location.origin.includes('www.brnenskyfrgal.cz') ? 'align-items:flex-start' : '') + '">' +
+                    '                  <span class="payment-info"><b>' + dateSelectLabel + '</b></span>' +
+                                        datePickerHTML +
+                                        (TIMES_ENABLED && showTimePicker === true ? timePickerHTML : '') +
+                                        (datePickerTooltip ? '<span class="fv-asap-tooltip old-template" title="' + datePickerTooltip + '" data-placement="' + (window.innerWidth < 768 ? 'bottom' : 'top') + '" data-original-title="' + datePickerTooltip + '">&nbsp;</span>' : '') +
+                    '               </label>' +
+                    '           </input>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>';
+                if (template === 'Step') {
+                    $(shippingHTML).insertAfter('.order-delivery-payment-form');
+                } else {
+                    $(shippingHTML).insertAfter(".box.co-delivery-method");
+                }
+            }
+
+            if (USE_DATEPICKER_DROPDOWN) {
+                $('.fv-datepicker').datepicker({
+                    minDate: '+0D',
+                    maxDate: '+7M',
+                    beforeShowDay: function (date) {
+                        const currDate = moment(date).format('YYYY-MM-DD');
+                        const isValid = addDates.includes(currDate);
+                        return [isValid, '', null];
+                    }
+                });
+
+                if (['Rock', 'Soul', 'Pop'].includes(template)) {
+                    const styleBlock = '<style id="fv-datum-style-hafro">' +
+                        '.ui-datepicker-calendar .ui-state-disabled { text-align: center; opacity: 0.4 }' +
+                        'input.fv-datepicker { max-width: 400px; }' +
+                        '.fv-datepicker .ui-datepicker-inline { display: none !important }' +
+                        'input.fv-datepicker { margin-left: 1em; height: 26px; padding-left: 10px; }' +
+                    '</style>';
+                    $('head').append(styleBlock);
+                } else {
+                    const styleBlock = '<style id="fv-datum-style-hafro">' +
+                        '.ui-datepicker-calendar .ui-state-disabled .ui-state-default { text-align: center; opacity: 0.4 }' +
+                        'input.fv-datepicker { max-width: 400px; }' +
+                    '</style>';
+                    $('head').append(styleBlock);
+                }
+            }
+
+            if (location.origin.includes('pribram.prodejnyzeman.cz')) {
+                const styleBlock = '<style id="fv-datum-style-zeman">' +
+                    '.box.box-sm.box-bg-default.co-box.fv-datum > h4::before { display: none; }' +
+                '</style>';
+                $('head').append(styleBlock);
+            }
+            if (location.origin.includes('www.vygruntujeme-eshop.cz')) {
+                const styleBlock = '<style id="fv-datum-style-vygruntujme-eshop">' +
+                    '@media (min-width: 768px) { .fv-datum .form-control { margin-bottom: 0 !important; width: 380px !important; } }' +
+                    '@media (min-width: 768px) { .fv-datum .form-control[name="datepicker"] { margin-right: 12px; } }' +
+                    '.fv-datum h4.order-icon::before { background: url(https://cdn.fv-studio.cz/vygruntujeme-eshop.cz/iko-hodiny.svg) no-repeat center; background-size: 24px; }' +
+                '</style>';
+                $('head').append(styleBlock);
+            }
+
+            if (location.origin.includes('b2b.farmiafood.cz')) {
+                if (Number(now.format('H')) >= 12) {
+                    $('.fv-datum input[name="shippingDate"]:eq(1)').prop('checked', true);
+                    $('.fv-datum input[name="shippingDate"]:eq(0)').prop('disabled', true);
+                    fvstudio_shippingdate.selectDelivery(1);
+                }
+            }
+
+            if (location.origin.includes('www.partysluzby.cz')) {
+                const styleBlock = '<style id="fv-datum-style-partysluzby">' +
+                    'select option:not(:disabled) { color: initial !important; }' +
+                '</style>';
+                $('head').append(styleBlock);
+            }
+
+            setTimeout(function() {
+                $('.fv-asap-tooltip').tooltip();
+            }, 100);
+
+            fvstudio_shippingdate.checkTimepickerAvailability();
+        }
+
+        function setDefaultValues() {
+            if (!$('.fv-datum').length) {
+                return;
+            }
+
+            const val = sessionStorage.getItem('fv_deliverydate');
+            const valTime = sessionStorage.getItem('fv_deliverytime');
+            const valTimeAddon = sessionStorage.getItem('fv_deliverytimeaddon');
+            if (val == null || val === '') {
+                return;
+            }
+
+            if ($('.fv-datum select[name=datepicker] option[value="'+val+'"]').length === 0) {
+                sessionStorage.removeItem('fv_deliverydate');
+                sessionStorage.removeItem('fv_deliverytime');
+                sessionStorage.removeItem('fv_deliverytimeaddon');
+                return;
+            }
+
+            if (['Rock', 'Soul', 'Pop'].includes(template)) {
+                if (val === 'asap') {
+                    $('.fv-datum .radio-wrapper:nth-child(1) input').attr('checked', 'checked');
+                } else {
+                    $('.fv-datum .radio-wrapper:nth-child(2) input').attr('checked', 'checked');
+                    $('.fv-datum select[name=datepicker]').val(val);
+                    $('.fv-datum select[name=timepicker]').val(valTime);
+                }
+
+                if (USE_DATEPICKER_DROPDOWN) {
+                    $('.fv-datum input[name=datepicker]').val(moment(val).format('D.M.YYYY'));
+                }
+            } else {
+                if (val === 'asap') {
+                    $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.add('active');
+                    $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', true);
+
+                    $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.remove('active');
+                    $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', false);
+                } else {
+                    $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                    $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+
+                    $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                    $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+
+                    $('.fv-datum select[name=datepicker]').val(val);
+                    $('.fv-datum select[name=timepicker]').val(valTime);
+                    if (valTimeAddon) {
+                        $('.fv-datum select[name=timeaddonpicker]').val(valTimeAddon);
+                    }
+
+                    if (USE_DATEPICKER_DROPDOWN) {
+                        $('.fv-datum input[name=datepicker]').val(moment(val).format('D.M.YYYY'));
+                    }
+                }
+            }
+
+            const selectedShippingMethodGuid = sessionStorage.getItem('fv_selectedshippingmethod');
+            let skipDays = state.settings.shippingDelay || 1;
+            if (state.settings.addons.shippingMethodSpecificOptions === true && state.settings.shippingDelayShippingMethods != null) {
+                const methodDelay = state.settings.shippingDelayShippingMethods.find(function(item) { return item.guid === selectedShippingMethodGuid; });
+                skipDays = methodDelay ? methodDelay.value : skipDays;
+            }
+            if (skipDays === 0) {
+                fvstudio_shippingdate.onDeliveryDateChange('date', true);
+            }
+
+            fvstudio_shippingdate.checkTimepickerAvailability();
+        }
+
+        $.ajax({
+            url: API_URL + '/data',
+            data: {
+                id: generateShopId(),
+            },
+            success: function(res) {
+                if (res && res.data) {
+                    const data = res.data.data;
+                    state.headerText = data.headerText;
+                    state.asapLabel = data.asapLabel;
+                    state.asapTooltip = data.asapTooltip;
+                    state.datePickerTooltip = data.datePickerTooltip;
+                    state.dateSelectLabel = data.dateSelectLabel;
+                    state.settings = data.settings;
+                    state.shippingMethods = res.data.shippingMethods;
+                    state.shippingMethodDateSelectEnabled = true;
+                    fvstudio_shippingdate.state = state;
+
+                    const selectedShippingMethod = sessionStorage.getItem('fv_selectedshippingmethod');
+                    deliveryTimesOptions = deliveryTimesOptionsGenerator(selectedShippingMethod);
+
+                    USE_DATEPICKER_DROPDOWN = state.settings.addons.datepicker === true;
+                    EXCP_HIDE_ASAP = state.settings.addons.hideAsap === true;
+
+                    generateHTMLWrapper(state.headerText, state.items);
+                    setDefaultValues();
+                    fvstudio_shippingdate.calculateSlotAvailability(true);
+                    setDefaultValues();
+
+                    if ($('.fv-datum').length && (EXCP_HIDE_ASAP || ORDER_SLOTS_ENABLED)) {
+                        if (['Rock', 'Soul', 'Pop'].includes(fvstudio_shippingdate.template)) {
+                            $('.fv-datum .radio-wrapper:nth-child(2) input').attr('checked', 'checked');
+                        } else {
+                            $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                            $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+                            $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                            $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+                        }
+                    }
+
+                    if (state.settings.addons && state.settings.addons.shippingMethodSpecificOptions === true) {
+                        let prevShippingMethod = null;
+                        document.addEventListener('ShoptetShippingMethodUpdated', function (e) {
+                            const shipM = $(shoptet.checkoutShared.activeShipping).attr('id');
+                            const isShippingChanged = shipM === undefined || prevShippingMethod !== shipM;
+                            if (isShippingChanged) {
+                                if (['Rock', 'Soul', 'Pop'].includes(template)) {
+                                    setTimeout(function() {
+                                        generateHTMLWrapper(state.headerText, state.items);
+                                        if ($('.fv-datum').length) {
+                                            $('.fv-datum .radio-wrapper:nth-child(2) input').attr('checked', 'checked');
+                                        }
+                                    }, 100);
+                                } else {
+                                    setTimeout(function() {
+                                        generateHTMLWrapper(state.headerText, state.items);
+                                        if ($('.fv-datum').length) {
+                                            $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                                            $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+                                            $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                                            $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+                                        }
+                                    }, 100);
+                                }
+                            }
+                            prevShippingMethod = shipM;
+                        });
+
+                        var externalShippingWrappers = document.querySelectorAll('[data-external-script="true"]');
+                        if (externalShippingWrappers) {
+                            for (var i = 0; i < externalShippingWrappers.length; i++) {
+                                var wrapper = externalShippingWrappers[i];
+                                wrapper.addEventListener("ShoptetExternalShippingChanged", (function(e) {
+                                    setTimeout(function() {
+                                        generateHTMLWrapper(state.headerText, state.items);
+                                        if ($('.fv-datum').length) {
+                                            $('.fv-datum .radio-wrapper:nth-child(1)')[0].classList.remove('active');
+                                            $('.fv-datum .radio-wrapper:nth-child(1) input').prop('checked', false);
+                                            $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+                                            $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+                                        }
+                                    }, 100);
+                                }));
+                            }
+                        }
+                    }
+
+                    if (state.settings.addons && state.settings.addons.shippingMethodSpecificOptions === true) {
+                        const styleBlock = '<style id="fv-datum-style-shipping-methods">' +
+                            '.radio-wrapper.only-child { margin-bottom: -19px; border-bottom-style: none }' +
+                            '.messages { z-index: 9999 }' +
+                        '</style>';
+                        $('head').append(styleBlock);
+                    }
+
+                    if (ORDER_SLOTS_ENABLED) {
+                        const styleBlock = '<style id="fv-datum-style-slots">' +
+                            '.fv-datum #deliveryPick2 input[type="radio"]+label::before { display: none; }' +
+                            '.fv-datum #deliveryPick2 input[type="radio"]+label::after { display: none; }' +
+                            '.fv-datum #deliveryPick2 label { padding-left: 0; }' +
+                        '</style>';
+                        $('head').append(styleBlock);
+                    }
+                }
+
+                if (
+                    /MSIE|Trident/.test(window.navigator.userAgent) && state.settings.addons.unsupportedIEDialog && (
+                    currentPath.includes('objednavka/krok-1')
+                    || currentPath.includes('order/step-1')
+                    || currentPath.includes('rendeles/lepes-1')
+                    || currentPath.includes('comanda/comanda-plata-si-transport')
+                    || currentPath.includes('bestellung/schritt-1/')
+                    || currentPath.includes('zamowienie/zamowienie-platnosci-i-wysylki')
+                    || currentPath.includes('dat-hang/buoc-1')
+                    )
+                ) {
+                    const styleBlockIEPopup = '<style id="fv-style-ie-popup">' +
+                        '.fvstudio-popup_description p { line-height: 1.4 }' +
+                        '.fvstudio-popup_links { border-top: 1px solid rgba(97, 97, 97, .1); argin-top: 20px; padding-top: 20px; }' +
+                        '.fvstudio-popup_links .btn { border-radius: 4px !important;text-transform: uppercase;font-size: 14px;height: 40px;line-height: 40px;position: relative;background-color: transparent;border: 1px solid #bbb;color: #333;padding: 0 10px 0 50px;margin-right: 10px;margin-bottom:10px }' +
+                        '.fvstudio-popup_links .btn:before { content: \'\';position: absolute;left: 40px;top: 0;bottom: 0;width: 1px;background-color: #bbb; }' +
+                        '.fvstudio-popup_links .btn img { height: 24px; position: absolute; top: 8px; left: 8px }'
+                    '</style>';
+                    $('head').append(styleBlockIEPopup);
+                    setTimeout(function() {
+                        var ieWarningHtml =
+                            '<div class="fvstudio-popup_description">' +
+                            '    <p><strong>VÁŠ PROHLÍŽEČ NENÍ PODPOROVÁN!</strong></p>' +
+                            '    <p>' +
+                            '        Važený zákazníku,<br />' +
+                            '        pro plné využití našeho e-shopu prosím použijte jeden z níže uvedených prohlížečů. Děkujeme za pochopení.' +
+                            '    </p>' +
+                            '    <p>Váš prohlížeč Internet Explorer není naším e-shopem podporován.</p>' +
+                            '    <div class="fvstudio-popup_links" style="text-align: center;">' +
+                            '        <a href="https://www.google.com/chrome/" target="_blank" class="btn"><img src="https://cdn.fv-studio.cz/eshop.iceland.cz/chrome.png" alt="Chrome" /><span>Chrome</span></a>' +
+                            '        <a href="https://www.mozilla.org/cs/firefox/new/" target="_blank" class="btn"><img src="https://cdn.fv-studio.cz/eshop.iceland.cz/firefox.png" alt="Firefox" /><span>Firefox</span></a>' +
+                            '        <a href="https://www.opera.com/" target="_blank" class="btn"><img src="https://cdn.fv-studio.cz/eshop.iceland.cz/opera.png" alt="Opera" /><span>Opera</span></a>' +
+                            '        <a href="https://www.microsoft.com/cs-cz/edge" target="_blank" class="btn"><img src="https://cdn.fv-studio.cz/eshop.iceland.cz/edge.png" alt="Edge" /><span>Edge</span></a>' +
+                            '    </div>' +
+                            '</div>';
+
+
+                        shoptet.modal.open({
+                            html: shoptet.content.colorboxHeader + ieWarningHtml + shoptet.content.colorboxFooter,
+                            width: '60%',
+                            height: 'auto',
+                            className: 'testlol',
+                            escKey: false,
+                            // closeButton: false,
+                            overlayClose: false
+                        });
+                    }, 1000);
+                }
+            },
+        });
+
+        if (EXCP_HIDE_ASAP) {
+            const styleBlock = '<style id="fv-datum-style">' +
+                '.fv-datum #deliveryPick2 input[type="radio"]+label::before { display: none; }' +
+                '.fv-datum #deliveryPick2 input[type="radio"]+label::after { display: none; }' +
+                '.fv-datum #deliveryPick2 label { padding-left: 0; }' +
+                '.fv-datum #deliveryPick2 input[type="radio"] { display: none; }' +
+            '</style>';
+            $('head').append(styleBlock);
+        }
+
+        function checkSelectedOptionValidity() {
+            const deliveryDate = $('.fv-datum select[name=datepicker]').val();
+            const deliveryTime = $('.fv-datum select[name=timepicker]').val();
+
+            generateHTMLWrapper();
+            $('.fv-datum .radio-wrapper:nth-child(2)')[0].classList.add('active');
+            $('.fv-datum .radio-wrapper:nth-child(2) input').prop('checked', true);
+
+            const dateExists = !!$('.fv-datum select[name=datepicker] option[value="'+deliveryDate+'"]').length;
+            const timeExists = !!$('.fv-datum select[name=timepicker] option[value="'+deliveryTime+'"]').length;
+
+            if (!dateExists || !timeExists) {
+                showMessage('Zvolené datum a čas není pro tuto dopravu možný. Vyberte prosím jiné datum a čas.', 'warning', '', false, false);
+                return false;
+            }
+
+            $('.fv-datum select[name=datepicker]').val(deliveryDate);
+            $('.fv-datum select[name=timepicker]').val(deliveryTime);
+            if (deliveryDate !== 'none') {
+                $('#fvDeliveryTimeSelect').attr('disabled', false);
+            }
+
+            return true;
+        }
+
+        if (['Rock', 'Soul', 'Pop'].includes(template)) {
+            $('#order-form .buttons-order .b-next').click(function(e) {
+                const deliveryOption = $('.fv-datum input[name=shippingDate]:checked').val();
+                if (state.shippingMethodDateSelectEnabled && deliveryOption === 'custom') {
+                    let deliveryDate = $('.fv-datum select[name=datepicker]').val();
+                    if (USE_DATEPICKER_DROPDOWN) {
+                        const dt = $('.fv-datum input[name=datepicker]').val();
+                        deliveryDate = dt ? moment(dt, 'DD.MM.YYYY').format('YYYY-MM-DD') : 'none';
+                    }
+                    const deliveryTime = $('.fv-datum select[name=timepicker]').val();
+                    if (deliveryDate === 'none' || deliveryTime === 'none') {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                        if (EXCP_HIDE_ASAP || ORDER_SLOTS_ENABLED) {
+                            alert(deliveryTime === 'none' ? i18nlol[language].warningSelectTime : i18nlol[language].warningSelect);
+                        } else {
+                            alert(deliveryTime === 'none' ? i18nlol[language].warningSelectTimeAsap : i18nlol[language].warningSelectAsap);
+                        }
+                    } else {
+                        sessionStorage.setItem('fv_deliverydate', deliveryDate);
+                        if (deliveryTime && deliveryTime !== 'none') {
+                            sessionStorage.setItem('fv_deliverytime', deliveryTime);
+                        }
+                        if (deliveryTime == null) {
+                            sessionStorage.removeItem('fv_deliverytime');
+                            sessionStorage.removeItem('fv_selectedshippingmethod');
+                        }
+                    }
+                } else {
+                    sessionStorage.setItem('fv_deliverydate', 'asap');
+                    sessionStorage.removeItem('fv_deliverytime');
+                    sessionStorage.removeItem('fv_selectedshippingmethod');
+                }
+            });
+            if ($('#submit-order').length > 0) {
+                document.addEventListener('ShoptetSuccessfulValidation', function() {
+                    if (location.origin.includes('www.onlinekvetinypraha.cz')) {
+                        let note = '';
+                        const cart = localStorage.getItem('fvCartNote') == null ? {} : JSON.parse(localStorage.getItem('fvCartNote'));
+                        Object.keys(cart).map(
+                          (key) =>
+                            (note = note + `${cart[key].name + (cart[key].variant == '' ? '' : ', ' + cart[key].variant)}, Vzkaz ke květině: ${cart[key].note}  \n`)
+                        );
+                        if (note != '') {
+                            note = '----------------------------------------- \n' + note;
+                            $('#add-note').prop('checked', true);
+                            $('textarea[name=remark]').val($('textarea[name=remark]').val() + '   \n' + note);
+                        }
+                        localStorage.removeItem('fvCartNote');
+                    }
+
+                    let noteText = i18nlol[language].selectedDate;
+                    const deliveryOption = sessionStorage.getItem('fv_deliverydate');
+                    const deliveryTimeOption = sessionStorage.getItem('fv_deliverytime');
+
+                    if (!deliveryOption) {
+                        return;
+                    }
+
+                    if (deliveryOption === 'asap') {
+                        if (location.origin.includes('www.iboxik.cz')) {
+                            noteText += 'co nejdříve';
+
+                            $('#add-note').attr('checked', 'checked');
+
+                            const noteOriginalText = $('textarea[name=remark]').val();
+                            const noteNewText = noteText + '\n\n' + noteOriginalText;
+                            $('textarea[name=remark]').val(noteNewText);
+                        } else {
+                            noteText = '';
+                        }
+                    } else {
+                        const day = moment(deliveryOption);
+                        noteText += i18nlol[language].dayNames[day.format('ddd').toLowerCase()] + ' ' + day.format('DD.MM.YYYY');
+                        if (deliveryTimeOption) {
+                            let deliveryTimeFormatted = deliveryTimesOptions[deliveryTimeOption];
+                            if (deliveryTimeOption.includes('_exact_')) {
+                                const t = deliveryTimeOption.substr(-4, 4);
+                                deliveryTimeFormatted = t[0]+t[1] + ':' + t[2]+t[3];
+                            }
+                            noteText += ' ' + deliveryTimeFormatted;
+                            if (!location.origin.includes('www.angrybeards.cz')) {
+                                noteText += ' \n[date:'+day.format('YYYY-MM-DD')+' '+deliveryTimeOption+']';
+                            }
+                        }
+
+                        $('#add-note').attr('checked', 'checked');
+
+                        const noteOriginalText = $('textarea[name=remark]').val();
+                        const noteNewText = noteText + '\n\n' + noteOriginalText;
+                        $('textarea[name=remark]').val(noteNewText);
+                    }
+                });
+            }
+            if ($('.order-summary-heading, .checkout-summary').length > 0) {
+                sessionStorage.removeItem('fv_deliverydate');
+                sessionStorage.removeItem('fv_deliverytime');
+            }
+        } else {
+            if ($('#orderFormButton').length) {
+                function submitHandler(e) {
+                    if (location.origin.includes('eshop.iceland.cz')) {
+                        if (!checkSelectedOptionValidity()) {
+                            e.stopImmediatePropagation();
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+                    const deliveryOption = $('.fv-datum input[name=shippingDate]:checked').val();
+                    if (state.shippingMethodDateSelectEnabled && deliveryOption === 'custom') {
+                        let deliveryDate = $('.fv-datum select[name=datepicker]').val();
+                        if (USE_DATEPICKER_DROPDOWN) {
+                            const dt = $('.fv-datum input[name=datepicker]').val();
+                            deliveryDate = dt ? moment(dt, 'DD.MM.YYYY').format('YYYY-MM-DD') : 'none';
+                        }
+                        const deliveryTime = $('.fv-datum select[name=timepicker]').val();
+                        const deliveryTimeAddon = $('.fv-datum select[name=timeaddonpicker]').val();
+                        if (deliveryDate === 'none' || deliveryTime === 'none') {
+                            e.stopImmediatePropagation();
+                            e.preventDefault();
+                            if (EXCP_HIDE_ASAP || ORDER_SLOTS_ENABLED) {
+                                alert(deliveryTime === 'none' ? i18nlol[language].warningSelectTime : i18nlol[language].warningSelect);
+                            } else {
+                                alert(deliveryTime === 'none' ? i18nlol[language].warningSelectTimeAsap : i18nlol[language].warningSelectAsap);
+                            }
+                        } else {
+                            if (deliveryTimeAddon === 'none') {
+                                e.stopImmediatePropagation();
+                                e.preventDefault();
+                                alert('Vyberte prosím upřesnění časového okna.');
+                                return;
+                            }
+
+                            sessionStorage.setItem('fv_deliverydate', deliveryDate);
+                            if (deliveryTime && deliveryTime !== 'none') {
+                                sessionStorage.setItem('fv_deliverytime', deliveryTime);
+                            }
+                            if (deliveryTimeAddon && deliveryTimeAddon !== 'none') {
+                                sessionStorage.setItem('fv_deliverytimeaddon', deliveryTimeAddon);
+                            }
+                            if (deliveryTime == null) {
+                                sessionStorage.removeItem('fv_deliverytime');
+                                sessionStorage.removeItem('fv_selectedshippingmethod');
+                            }
+                            if (deliveryTimeAddon == null) {
+                                sessionStorage.removeItem('fv_deliverytimeaddon');
+                            }
+                        }
+                    } else {
+                        sessionStorage.setItem('fv_deliverydate', 'asap');
+                        sessionStorage.removeItem('fv_deliverytime');
+                        sessionStorage.removeItem('fv_deliverytimeaddon');
+                        sessionStorage.removeItem('fv_selectedshippingmethod');
+                    }
+                }
+                let submitHandlerTimeout = 1;
+                if (location.origin.includes('www.vindemariedomu.cz')) {
+                    submitHandlerTimeout = 1000;
+                }
+                setTimeout(function() {
+                    $('#order-form').on('submit', function(e) {
+                        submitHandler(e);
+                    });
+                }, submitHandlerTimeout);
+            }
+            if ($('#submit-order').length > 0) {
+                document.addEventListener('ShoptetSuccessfulValidation', function() {
+                    if (location.origin.includes('www.onlinekvetinypraha.cz')) {
+                        let note = '';
+                        const cart = localStorage.getItem('fvCartNote') == null ? {} : JSON.parse(localStorage.getItem('fvCartNote'));
+                        Object.keys(cart).map(
+                          (key) =>
+                            (note = note + `${cart[key].name + (cart[key].variant == '' ? '' : ', ' + cart[key].variant)}, Vzkaz ke květině: ${cart[key].note}  \n`)
+                        );
+                        if (note != '') {
+                            note = '----------------------------------------- \n' + note;
+                            $('#add-note').prop('checked', true);
+                            $('textarea[name=remark]').val($('textarea[name=remark]').val() + '   \n' + note);
+                        }
+                        localStorage.removeItem('fvCartNote');
+                    }
+
+                    let noteText = i18nlol[language].selectedDate;
+                    if (location.origin.includes('www.dosadu.cz')) {
+                        noteText = ' Datum odeslání: ';
+                    }
+                    const deliveryOption = sessionStorage.getItem('fv_deliverydate');
+                    const deliveryTimeOption = sessionStorage.getItem('fv_deliverytime');
+                    const deliveryTimeAddonOption = sessionStorage.getItem('fv_deliverytimeaddon');
+
+                    if (!deliveryOption) {
+                        return;
+                    }
+
+                    if (deliveryOption === 'asap') {
+                        if (location.origin.includes('www.iboxik.cz')) {
+                            noteText += 'co nejdříve';
+
+                            $('#add-note').attr('checked', 'checked');
+
+                            const noteOriginalText = $('textarea[name=remark]').val();
+                            const noteNewText = noteText + '\n\n' + noteOriginalText;
+                            $('textarea[name=remark]').val(noteNewText);
+                        } else {
+                            noteText = '';
+                        }
+                        if (location.origin.includes('www.flowersgohome.cz') || location.origin.includes('www.tulipanek.cz')) {
+                            const fghNoteText = sessionStorage.getItem('fv_fgh_notetext');
+                            const fghDelPhone = sessionStorage.getItem('fv_fgh_deliveryphone_number');
+                            const fghDelPhoneCode = sessionStorage.getItem('fv_fgh_deliveryphone_code');
+
+                            if (fghNoteText) {
+                                noteText += 'Vzkaz do květiny: ' + fghNoteText;
+                            }
+                            if (fghDelPhone) {
+                                let code = '';
+                                try {
+                                    code = JSON.parse(fghDelPhoneCode).phoneCode;
+                                } catch {}
+                                noteText += '\nTelefonní číslo doručovací adresa: ' + code + '' + fghDelPhone;
+                            }
+
+                            $('#add-note').attr('checked', 'checked');
+
+                            const noteOriginalText = $('textarea[name=remark]').val();
+                            const noteNewText = noteText + '\n\n' + noteOriginalText;
+                            $('textarea[name=remark]').val(noteNewText);
+                        }
+                    } else {
+                        const deliveryDate = $('.fv-datum select[name=datepicker]').val();
+                        const day = moment(deliveryOption);
+                        noteText += i18nlol[language].dayNames[day.format('ddd').toLowerCase()] + ' ' + day.format('DD.MM.YYYY');
+                        if (deliveryTimeOption) {
+                            let deliveryTimeFormatted = deliveryTimesOptions[deliveryTimeOption];
+                            if (deliveryTimeOption.includes('_exact_')) {
+                                const t = deliveryTimeOption.substr(-4, 4);
+                                deliveryTimeFormatted = t[0]+t[1] + ':' + t[2]+t[3];
+                            }
+                            noteText += ' ' + deliveryTimeFormatted;
+                            if (!location.origin.includes('www.angrybeards.cz')) {
+                                noteText += ' \n[date:'+day.format('YYYY-MM-DD')+' '+deliveryTimeOption+']';
+                            }
+                        }
+                        if (deliveryTimeAddonOption) {
+                            noteText += '\nUpřesnění času: ' + i18nlol[language].timeAddonOptions[deliveryTimeAddonOption];
+                        }
+
+                        if (location.origin.includes('www.flowersgohome.cz') || location.origin.includes('www.tulipanek.cz')) {
+                            const fghNoteText = sessionStorage.getItem('fv_fgh_notetext');
+                            const fghDelPhone = sessionStorage.getItem('fv_fgh_deliveryphone_number');
+                            const fghDelPhoneCode = sessionStorage.getItem('fv_fgh_deliveryphone_code');
+
+                            if (fghNoteText) {
+                                noteText += '\nVzkaz do květiny: ' + fghNoteText;
+                            }
+                            if (fghDelPhone) {
+                                let code = '';
+                                try {
+                                    code = JSON.parse(fghDelPhoneCode).phoneCode;
+                                } catch {}
+                                noteText += '\nTelefonní číslo doručovací adresa: ' + code + '' + fghDelPhone;
+                            }
+                        }
+
+                        $('#add-note').attr('checked', 'checked');
+
+                        const noteOriginalText = $('textarea[name=remark]').val();
+                        const noteNewText = noteText + '\n\n' + noteOriginalText;
+                        $('textarea[name=remark]').val(noteNewText);
+                    }
+                });
+            }
+            if ($('.order-summary-heading, .order-summary-heading, .checkout-summary').length > 0) {
+                sessionStorage.removeItem('fv_deliverydate');
+                sessionStorage.removeItem('fv_deliverytime');
+                sessionStorage.removeItem('fv_selectedshippingmethod');
+                sessionStorage.removeItem('fv_deliverytimeaddon');
+                sessionStorage.removeItem('fv_fgh_notetext');
+                sessionStorage.removeItem('fv_fgh_deliveryphone_number');
+                sessionStorage.removeItem('fv_fgh_deliveryphone_code');
+            }
+        }
+    }
+};

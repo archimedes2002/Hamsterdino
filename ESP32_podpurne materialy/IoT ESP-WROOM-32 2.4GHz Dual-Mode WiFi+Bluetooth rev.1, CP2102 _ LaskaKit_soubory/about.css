@@ -1,0 +1,70 @@
+.in-o-nas h1 { display: none; }
+
+.about-heading { color: #2c2826; font-size: 24px; line-height: 29px; font-weight: bold; }
+
+.about-intro { display: -webkit-box; display: -ms-flexbox; display: flex; margin: 20px 0 0; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; }
+
+.about-intro-text { color: #2c2826; margin: 0 0 25px; line-height: 22px; }
+
+.about-intro-text:first-child { font-size: 16px; line-height: 25px; }
+
+.about-intro-text:last-child { margin: 0; }
+
+.about-intro-img { margin: 20px 0; }
+
+.about-hero-content { margin: 20px 0 0; }
+
+.about-hero-name { font-size: 24px; font-weight: 700; color: #2c2826; margin: 0; }
+
+.about-hero-badge { font-size: 12px; font-weight: 600; color: #fff; line-height: 14px; background: #ff873c; border-radius: 30px; padding: 2px 8px; margin: 10px 0 20px; display: inline-block; }
+
+.about-hero-texts { margin: 20px 0 0; }
+
+.about-hero-texts p { font-size: 14px; line-height: 22px; color: #2c2826; margin: 0; }
+
+.about-hero-texts p:first-child { margin: 0 0 30px; }
+
+.about-video { margin: 45px 0; position: relative; }
+
+.about-video-title { font-size: 20px; font-weight: 700; color: #2c2826; line-height: 24px; margin: 0 0 10px; }
+
+.about-video-button { position: absolute; bottom: 20px; right: 20px; }
+
+.about-video-button img { padding: 14px; border-radius: 50%; background: #ff873c; }
+
+.about-video-button span { font-size: 12px; font-weight: 700; color: #fff; margin-left: 7px; }
+
+.about-warehouse-title { font-size: 20px; font-weight: 700; color: #2c2826; margin: 0 0 15px; }
+
+.about-warehouse-items { display: -ms-grid; display: grid; grid-gap: 10px; -ms-grid-columns: 1fr 1fr; grid-template-columns: 1fr 1fr; }
+
+.about-question { margin: 45px 0 0; }
+
+.about-question-title { font-size: 24px; font-weight: 700; line-height: 29px; text-align: center; color: #2c2826; }
+
+.about-question-texts { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: center; -ms-flex-align: center; align-items: center; max-width: 324px; margin: 0 auto; }
+
+.about-question-text { font-size: 14px; line-height: 24.5px; color: #2c2826; text-align: center; }
+
+.about-question-text:first-child { margin: 10px 0 0; }
+
+.about-question-text:last-child { margin: 0 0 20px; }
+
+.about-question-btn.btn { text-align: center; display: -webkit-box; display: -ms-flexbox; display: flex; margin: 0 auto; max-width: 160px; height: 48px; font-size: 14px; font-weight: 700; color: #fff; background: #ff873c; text-transform: none; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; border-radius: 4px; }
+
+@media (min-width: 992px) { .in-o-nas .content-inner { max-width: 912px; }
+  .about { margin: 45px 0 0; }
+  .about-heading { font-size: 32px; line-height: 39px; }
+  .about-intro { -webkit-box-orient: horizontal; -webkit-box-direction: normal; -ms-flex-direction: row; flex-direction: row; -webkit-box-align: center; -ms-flex-align: center; align-items: center; margin: 0; }
+  .about-intro-texts { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; }
+  .about-intro-img { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; margin: 0; }
+  .about-hero { display: -ms-grid; display: grid; grid-gap: 50px; margin: 50px 0 0; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -ms-grid-columns: 1fr 1fr; grid-template-columns: 1fr 1fr; }
+  .about-hero-name { font-size: 32px; line-height: 39px; }
+  .about-hero-img { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; }
+  .about-hero-content { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; }
+  .about-video { margin: 72px 0; }
+  .about-video-title { font-size: 24px; }
+  .about-warehouse { font-size: 24px; line-height: 29px; }
+  .about-warehouse-items { grid-gap: 24px; -ms-grid-columns: (1fr)[4]; grid-template-columns: repeat(4, 1fr); }
+  .about-question { margin: 72px 0; }
+  .about-question-texts { max-width: 400px; } }

@@ -1,0 +1,49 @@
+@media screen and (max-width: 768px) {
+    .fv-datum #deliveryPick2 label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .fv-datum #deliveryPick2 label span.payment-info {
+        margin-bottom: 5px;
+    }
+    .fv-datum #deliveryPick2 label select {
+        max-width: none;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .fv-datum #deliveryPick2 label .datepicker {
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        margin-bottom: 5px;
+    }
+    .fv-datum #deliveryPick2 label .xform-control {
+        max-width: none !important;
+        width: 100% !important;
+    }
+}
+
+.fv-asap-tooltip {
+    position: relative;
+    margin-right: 6px;
+}
+.fv-asap-tooltip.old-template {
+    margin-left: 1em;
+}
+.fv-asap-tooltip::after {
+    content: 'i';
+    position: absolute;
+    top: 2px;
+    left: -8px;
+    width: 16px;
+    height: 16px;
+    background: #546b79;
+    color: #fff;
+    text-align: center;
+    line-height: 14px;
+    font-size: 12px;
+    border: 1px solid;
+    border-radius: 50%;
+    font-weight: bold;
+    font-family: monospace;
+}

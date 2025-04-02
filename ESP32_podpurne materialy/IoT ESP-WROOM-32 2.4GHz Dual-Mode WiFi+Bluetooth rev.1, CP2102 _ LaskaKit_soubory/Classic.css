@@ -1,0 +1,20 @@
+/* Vyberte si datum - CLASSIC */
+#shippingPick1 {
+  border: 0;
+}
+@media (max-width: 767px) {
+  #fvDeliveryDaySelect {
+    width: 50%;
+  }
+}
+.box.box-sm.box-bg-default.co-box.fv-datum > h4::before {
+  content: "\e935";
+}
+.fv-datum-text .radio-wrapper .payment-info {
+  min-width: 140px;
+}
+@media (min-width: 767px) {
+  .fv-datum-text .radio-wrapper select:last-child {
+    margin-left: 14px;
+  }
+}

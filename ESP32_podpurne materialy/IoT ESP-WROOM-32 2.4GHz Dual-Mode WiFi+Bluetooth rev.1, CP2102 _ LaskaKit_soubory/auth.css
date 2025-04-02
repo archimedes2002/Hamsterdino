@@ -1,0 +1,360 @@
+.id--8 h1 {
+	font-size: 24px;
+	font-weight: 700;
+	color: #2c2826;
+	line-height: 29px;
+}
+
+.id--8 #register-form {
+	background: #fff;
+	border: 2px solid #e6f5f7;
+	border-radius: 4px;
+	padding: 25px 20px;
+}
+
+.id--8 #register-form .co-box .box {
+	position: relative;
+}
+
+.id--8 #register-form .co-box .box > h4 {
+	font-size: 16px;
+	line-height: 19px;
+	font-weight: 700;
+	color: #2c2826;
+	margin: 0 0 40px;
+}
+
+.id--8 #register-form .co-box .box .form-group {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+.id--8 #register-form .co-box .box .form-group label {
+	margin: 0 0 5px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 14px;
+	color: #2c2826;
+}
+
+.id--8 #register-form .co-box .box .form-group input {
+	border: 2px solid #c4d7da;
+	border-radius: 4px;
+	width: 100%;
+	height: 48px;
+}
+
+.id--8 #register-form .co-box .box .consents {
+	margin: 0;
+}
+
+.id--8 #register-form .co-box .box .consents label {
+	font-size: 12px;
+	line-height: 21px;
+	color: #2c2826;
+	opacity: 1;
+}
+
+.id--8 #register-form .co-box .box .consents label a {
+	font-size: 12px;
+	font-weight: 500;
+	color: #2c2826;
+	text-decoration: underline;
+}
+
+.id--8 #register-form .consents + .co-box {
+	position: absolute;
+	bottom: 30%;
+	border: none;
+}
+
+.id--8 #register-form .consents + .co-box label {
+	font-size: 12px;
+	font-weight: 500;
+	color: #2c2826;
+}
+
+.id--8 #register-form .form-group.submit-wrapper p {
+	margin: 0;
+}
+
+.id--8 #register-form .form-group.submit-wrapper input[type='submit'] {
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: none;
+	color: #fff;
+	background: #ff873c;
+	height: 48px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	border-radius: 4px;
+	margin: 60px 0 15px;
+	width: 100%;
+	border: none;
+}
+
+.id--8 #register-form .register-soc h4 {
+	font-size: 11px;
+	font-weight: 400;
+	text-align: center;
+	opacity: 0.6;
+	line-height: 10px;
+}
+
+.id--8 #register-form .register-soc .form-group {
+	margin: 0 0 5px;
+}
+
+.id--8 #register-form .register-soc .form-group a span:first-child {
+	width: 45px;
+	padding: 0;
+	font-size: 16px;
+	background-size: 16px;
+	left: 15px;
+}
+
+.id--8 #register-form .register-soc .form-group a span:last-child {
+	font-size: 12px;
+	text-align: left;
+}
+
+.id--8 #register-form .register-soc .login-btn.google {
+	background-color: #4e8eea;
+	border: none;
+	color: #fff;
+}
+
+.id--8 #register-form .col-md-4 {
+	padding-right: 20px;
+}
+
+.id--8 #register-form .auth-info {
+	background: #a8f7ff33;
+	border-radius: 4px;
+	padding: 20px;
+}
+
+.id--8 #register-form .auth-info-title {
+	font-size: 16px;
+	font-weight: 700;
+	color: #009baa;
+}
+
+.id--8 #register-form .auth-info-items {
+	margin: 20px 0 0;
+}
+
+.id--8 #register-form .auth-info-items p {
+	font-size: 14px;
+	font-weight: 500;
+	color: #2c2826;
+	margin: 0 0 5px;
+}
+
+.id--8 #register-form .auth-info-items p span:first-child {
+	margin-right: 10px;
+}
+
+.id--8 #register-form .auth-info-items p span:last-child {
+	font-size: 14px;
+	font-weight: 500;
+	color: #2c2826;
+}
+
+.id--8 #additionalInformation {
+	border: none;
+}
+
+.id--8 .co-box {
+	padding-left: 0;
+}
+
+.id--7 .h1 {
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 29px;
+	color: #2c2826;
+}
+
+.id--7 .content-inner {
+	max-width: 912px;
+}
+
+.id--7 #formForgottenPassword {
+	border: 2px solid #e6f5f7;
+	border-radius: 4px;
+	padding: 25px 20px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+.id--7 #formForgottenPassword fieldset {
+	-webkit-box-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+}
+
+.id--7 #formForgottenPassword fieldset p {
+	display: none;
+}
+
+.id--7 #formForgottenPassword fieldset h2 {
+	margin: 0 0 40px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 19px;
+}
+
+.id--7 #formForgottenPassword fieldset .form-group {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+.id--7 #formForgottenPassword fieldset .form-group label {
+	font-size: 12px;
+	font-weight: 700;
+	color: #2c2826;
+}
+
+.id--7 #formForgottenPassword fieldset .form-group input {
+	max-width: 416px;
+	width: 100%;
+	border: 2px solid #c4d7da;
+	border-radius: 4px;
+	height: 48px;
+}
+
+.id--7 #formForgottenPassword fieldset .form-group.login-wrapper {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	max-width: 416px;
+	width: 100%;
+	padding: 0;
+}
+
+.id--7 #formForgottenPassword fieldset .form-group.login-wrapper input {
+	background: #ff873c;
+	border: none;
+	border-radius: 4px;
+	font-weight: 700;
+	font-size: 16px;
+	width: 100%;
+	text-transform: none;
+	height: 48px;
+}
+
+.id--7 #formForgottenPassword .auth-password-info {
+	-webkit-box-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+	margin: 40px 0 0;
+}
+
+.id--7 #formForgottenPassword .auth-password-title {
+	font-size: 16px;
+	color: #009baa;
+	font-weight: 700;
+	line-height: 19px;
+}
+
+.id--7 #formForgottenPassword .auth-password-items {
+	margin: 25px 0;
+}
+
+.id--7 #formForgottenPassword .auth-password-item {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: start;
+	-ms-flex-align: start;
+	align-items: flex-start;
+}
+
+.id--7 #formForgottenPassword .auth-password-item:not(:last-child) {
+	margin: 0 0 20px;
+}
+
+.id--7 #formForgottenPassword .auth-password-number {
+	color: #ff873c;
+	background: #fff7e8;
+	padding: 5px 12px;
+	margin-right: 10px;
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.id--7 #formForgottenPassword .auth-password-text {
+	font-size: 14px;
+	font-weight: 500;
+	color: #2c2826;
+	line-height: 20px;
+}
+
+@media (min-width: 580px) {
+	.id--8 #register-form .register-soc .form-group a span:first-child {
+		left: 25%;
+	}
+}
+
+@media (min-width: 992px) {
+	.id--8 #register-form .register-soc .form-group a span:first-child {
+		left: 20%;
+	}
+	.id--8 #register-form .col-md-8 {
+		max-width: 416px;
+	}
+	.id--8 #register-form .col-md-4 {
+		width: 350px;
+	}
+	.id--8 #register-form .co-box {
+		padding-right: 0;
+	}
+	.id--8 #register-form .co-box .box > h4 {
+		margin: 0 0 30px;
+	}
+	.id--8 #register-form .co-box.co-registration .col-md-8 {
+		width: 416px;
+		padding: 0;
+	}
+	.id--8 #register-form .consents + .co-box {
+		position: relative;
+		bottom: auto;
+		padding: 0;
+		margin: 25px 0 0;
+	}
+	.id--8 #register-form .form-group.submit-wrapper {
+		margin: 0 0 25px;
+	}
+	.id--8 #register-form .form-group.submit-wrapper input[type='submit'] {
+		margin: 0;
+	}
+	.id--8 #register-form .register-soc h4 {
+		margin: 0 0 35px;
+	}
+	.id--8 #register-form .auth-info {
+		margin-top: 65px;
+	}
+}

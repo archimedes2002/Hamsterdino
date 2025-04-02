@@ -1,0 +1,211 @@
+
+            var FoxentryClientData = {"country":{"code":"CZ","name":"Czechia"},"city":"Pilsen","postal":"301 00","gps":{"latitude":49.7067,"longitude":13.3316},"ip":"147.228.128.14"};
+            Foxentry.loadConfig({"options":{"active":true,"validationNextInputAutojump":true,"validationResultVisual":"extended","customValidationHandlers":"false","browserAutocomplete":"false","restrictions":{"countryLimit":[],"creditsPerDay":-1,"creditsPerIp":-1,"restrictionsIp":[{"ip":"*","status":"1"}]},"whisperVersion":2,"whisperAdBox":true,"onLoadValidation":true,"allowIframeRun":false},"address":{"options":{"active":true,"limits":{"results":13,"resultsPersonalized":5},"addressCityExtended":"minimal","addressPartsRelation":true,"useGeolocation":true,"zipFormat":"default","addressValidity":"full","validityRequired":true},"data":[]},"name":{"options":{"active":true,"validityRequired":true},"data":[]},"email":{"options":{"active":true,"validationType":"extended","validityRequired":true},"data":[]},"phone":{"options":{"active":true,"validationType":"basic","outputFormatted":"false","validityType":"true","allowedPrefixes":[],"defaultPrefix":"+420","defaultPrefixFillInput":"false","validityRequired":true},"data":[]},"company":{"options":{"active":true,"limits":{"results":13,"resultsPersonalized":5},"validityFull":"true","limit":5,"limitUsed":3,"validityRequired":true,"companyNameFormat":"standardized"},"data":[]},"callbacks":[]});
+            var FoxentryBuilder = new FoxentryBuilderLib();
+            var FoxentryBillingType = "plan";
+            var FoxentryRequestsUsageData = {"requestsInLimitLeft":{"addressSearch":59307,"addressValidations":5349,"companySearch":19185,"companyValidations":1817,"emailValidations":8645,"phoneValidations":1995,"nameValidations":9297,"dataFills":6000},"requestsOverLimit":{"addressSearch":0,"addressValidations":0,"companySearch":0,"companyValidations":0,"emailValidations":0,"phoneValidations":0,"nameValidations":0,"dataFills":0},"overlimitAllowed":true};
+            var clientIp = "147.228.128.14";
+            var FoxentryWebsiteCms = "shoptet";
+            var cached = true;
+            var FoxentryClientToken = "6gLX2dedrRjNv5/8GVEdnUwTdleXbIV7VWLfVrMfxkxLeyeUU3chJnBuPJ7Q7o7aUki2GCg9L4dNfd+tyzhpaDprQk1kTct99OcmRY2zDi1kQeRu9xpnkTCVd8cXSujZ4qJVYF2hZOJACtn7YsvTX2WioZhEnEGAp4xveuTVJCBBisvj+9ZFTBkqrwmGRUoQZrh/HhqPn1fvp+1PFMApM0u/QP8oVD6GuA9XP4CBKx+A2aBsYMKMEeAG4A==";
+            var FoxentryMessages = {"whisper.banner.footer":"Používáme Foxentry.com"};
+            var FoxentryProjectProviderCountry = "cz";
+
+            var FoxentryLearningModeAllowed = true;
+
+            var FoxentryBillingPlanFree = false;
+            var FoxentryLearningMode = false;
+
+                                        FoxentryBuilder.validatorAdd("address", "Fakturační údaje");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "address",
+                            "Fakturační údaje",
+                            [
+                                                            {
+                                element  : "#billStreet",
+                                dataType : "streetWithNumber",
+                                dataTypeOut : "streetWithNumber"
+
+                                },
+                                                                {
+                                element  : "#billCity",
+                                dataType : "city",
+                                dataTypeOut : "city"
+
+                                },
+                                                                {
+                                element  : "#billZip",
+                                dataType : "zip",
+                                dataTypeOut : "zip"
+
+                                },
+                                                                {
+                                element  : "#billCountryId",
+                                dataType : "country",
+                                dataTypeOut : "country"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("address", "Fakturační údaje", {"validityRequired":"false","validationVisualShowtype":"onlyvalid","countrySelectMode":"limit","autofixByPartialNumber":"true"});
+                                                            FoxentryBuilder.validatorAdd("address", "Dodací údaje");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "address",
+                            "Dodací údaje",
+                            [
+                                                            {
+                                element  : "#deliveryStreet",
+                                dataType : "streetWithNumber",
+                                dataTypeOut : "streetWithNumber"
+
+                                },
+                                                                {
+                                element  : "#deliveryCity",
+                                dataType : "city",
+                                dataTypeOut : "city"
+
+                                },
+                                                                {
+                                element  : "#deliveryZip",
+                                dataType : "zip",
+                                dataTypeOut : "zip"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("address", "Dodací údaje", {"validityRequired":"false","validationVisualShowtype":"onlyvalid","countrySelectMode":"limit","autofixByPartialNumber":"true"});
+                                                            FoxentryBuilder.validatorAdd("name", "Fakturační jméno a příjmení");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "name",
+                            "Fakturační jméno a příjmení",
+                            [
+                                                            {
+                                element  : "#billFullName",
+                                dataType : "nameSurname",
+                                dataTypeOut : "nameSurname"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("name", "Fakturační jméno a příjmení", {"validityRequired":"false","validationVisualShowtype":"all","countrySelectMode":"prefer"});
+                                                            FoxentryBuilder.validatorAdd("name", "Dodací jméno a příjmení");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "name",
+                            "Dodací jméno a příjmení",
+                            [
+                                                            {
+                                element  : "#deliveryFullName",
+                                dataType : "nameSurname",
+                                dataTypeOut : "nameSurname"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("name", "Dodací jméno a příjmení", {"validityRequired":"false","validationVisualShowtype":"all","countrySelectMode":"prefer"});
+                                                            FoxentryBuilder.validatorAdd("email", "E-mail");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "email",
+                            "E-mail",
+                            [
+                                                            {
+                                element  : "#email",
+                                dataType : "email",
+                                dataTypeOut : "email"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("email", "E-mail", {"validityRequired":"false","validationVisualShowtype":"all"});
+                                                            FoxentryBuilder.validatorAdd("phone", "Telefon");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "phone",
+                            "Telefon",
+                            [
+                                                            {
+                                element  : "[name='phoneCode']",
+                                dataType : "phonePrefix",
+                                dataTypeOut : "phonePrefix"
+
+                                },
+                                                                {
+                                element  : "#phone",
+                                dataType : "phoneNumber",
+                                dataTypeOut : "phoneNumber"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("phone", "Telefon", {"validityRequired":"true","validationVisualShowtype":"all","defaultPrefix":"+420","defaultPrefixFillInput":"false","numberOutputFormat":"national"});
+                                                            FoxentryBuilder.validatorAdd("company", "Fakturační údaje");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "company",
+                            "Fakturační údaje",
+                            [
+                                                            {
+                                element  : "#billCompany",
+                                dataType : "name",
+                                dataTypeOut : "name"
+
+                                },
+                                                                {
+                                element  : "#companyId",
+                                dataType : "registrationNumber",
+                                dataTypeOut : "registrationNumber"
+
+                                },
+                                                                {
+                                element  : "#vatId",
+                                dataType : "taxNumber",
+                                dataTypeOut : "taxNumber"
+
+                                },
+                                                            ],
+                            [
+                                                            {
+                                element  : "#billStreet",
+                                dataType : "address.streetWithNumber",
+
+                                },
+                                                                {
+                                element  : "#billCity",
+                                dataType : "address.city",
+
+                                },
+                                                                {
+                                element  : "#billZip",
+                                dataType : "address.zip",
+
+                                },
+                                                            ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("company", "Fakturační údaje", {"validityRequired":"false","validationVisualShowtype":"all","countrySelectMode":"limit"});
+                                                            FoxentryBuilder.validatorAdd("company", "Dodací údaje");
+                            FoxentryBuilder.validatorMappingsAdd(
+                            "company",
+                            "Dodací údaje",
+                            [
+                                                            {
+                                element  : "#deliveryCompany",
+                                dataType : "name",
+                                dataTypeOut : "name"
+
+                                },
+                                                            ],
+                            [
+                                                        ]
+                            );
+                                                            FoxentryBuilder.validatorSetOptions("company", "Dodací údaje", {"validityRequired":"false","validationVisualShowtype":"all","countrySelectMode":"limit"});
+                                                Foxentry.ready();
+                

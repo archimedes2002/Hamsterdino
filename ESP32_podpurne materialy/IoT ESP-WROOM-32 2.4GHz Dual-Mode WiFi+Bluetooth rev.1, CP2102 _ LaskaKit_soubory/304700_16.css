@@ -1,0 +1,1157 @@
+:root {
+    --dklab-favourites-red: #bc1514;
+}
+#dkLabFavHeaderWrapper {
+    display: inline-block;
+    vertical-align: middle;
+}
+.dkLabFavHeaderIconBtn {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: var(--dklab-favourites-header-icon-color);
+    transition: 350ms;
+}
+.dkLabFavHeaderIconBtn::before {
+    font-family: 'oblibene' !important;
+    content: '\e900';
+    font-size: 22px;
+    position: relative;
+    top: 0px;
+}
+body.template-11 .dkLabFavHeaderIconBtn::before {
+    margin-right: 12px;
+}
+.dkLabFavHeaderIconBtn em {
+    font-style: normal;
+    display: inline-block;
+    background: var(--dklab-favourites-counter-color);
+    color: white;
+    font-weight: 400;
+    font-size: 11px;
+    width: 17px;
+    height: 17px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    right: 6px;
+    line-height: 17px;
+}
+body.template-11:not(.ordering-process) #oblibeneBtn {
+    display: inline-block;
+}
+/* Old DOM */
+.header-top .oblibeneBtn {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    color: var(--dklab-favourites-header-icon-color);
+    transition: color 350ms;
+}
+.header-top .oblibeneBtn:hover {
+    color: var(--color-primary-hover);
+}
+body.ordering-process .header-top .oblibeneBtn {
+    display: none;
+}
+.header-top .oblibeneBtn::before {
+    font-family: oblibene;
+    content: '\e900';
+    font-size: 25px;
+    position: relative;
+    top: 0px;
+    margin-right: 12px;
+}
+.header-top .oblibeneBtn em {
+    font-style: normal;
+    display: inline-block;
+    background: var(--dklab-favourites-counter-color);
+    color: white;
+    font-weight: 700;
+    font-size: 10px;
+    width: 14px;
+    height: 14px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    right: 6px;
+}
+@media (max-width: 767px) {
+    .header-top .oblibeneBtn {
+        position: absolute;
+        top: -49px;
+        right: 102px;
+    }
+    .header-top .oblibeneBtn::before {
+        font-size: 24px;
+    }
+    body.template-11.mobile-header-version-1 .header-top .oblibeneBtn::before {
+        font-size: 21px;
+    }
+    body.template-11.mobile-header-version-1 .header-top .oblibeneBtn {
+        top: -45px;
+        right: 146px;
+    }
+    .scrolled-down body.template-11:not(.ordering-process):not(.search-window-visible):not(.mobile-header-version-0) .oblibeneBtn {
+        transform: translateY(-150%);
+    }
+}
+.dkLabFavProductSpan.hasIcon:before,
+.dkLabFavDetailSpan.hasIcon:before,
+.dkLabFavFlagProduct.hasIcon > span:before,
+.dkLabFavFlagDetail.hasIcon > span:before {
+    content: '\e900';
+    position: relative;
+    top: 1px;
+    font-size: 100%;
+    font-family: oblibene;
+    margin-right: 5px;
+}
+.dkLabFavProductSpan.hasIcon.dkLabFavouriteProductLinkRemove:before,
+.dkLabFavDetailSpan.hasIcon.dkLabFavouriteDetailLinkRemove:before {
+    content: '\e901';
+}
+.dkLabFavProductSpan,
+.dkLabFavDetailSpan {
+    cursor: pointer;
+    transition: 350ms;
+}
+.dkLabFavProductSpan.dkLabFavouriteProductLinkRemove {
+    color: var(--dklab-favourites-remove-text-color);
+}
+.dkLabFavProductSpan.dkLabFavouriteProductLinkAdd {
+    color: var(--dklab-favourites-add-text-color);
+}
+.dkLabFavDetailSpan.dkLabFavouriteDetailLinkAdd {
+    color: var(--dklab-favourites-add-text-detail-color);
+}
+.dkLabFavDetailSpan.dkLabFavouriteDetailLinkRemove {
+    color: var(--dklab-favourites-remove-text-detail-color);
+}
+.dkLabFavProductSpan:hover,
+.dkLabFavDetailSpan:hover {
+    color: var(--color-primary-hover);
+}
+.dkLabFavProductSpan.dkLabFavNotAllowed,
+.dkLabFavDetailSpan.dkLabFavNotAllowed,
+.dkLabFavHeaderIconBtn.dkLabFavNotAllowed {
+    cursor: not-allowed;
+}
+.dkLabFavouriteProductDiv.onlyIcon {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    z-index: 1;
+    font-size: 18px;
+}
+.dkLabFavouriteProductLink {
+    color: var(--dklab-favourites-add-text-color);
+    cursor: pointer;
+}
+.dkLabFavouriteProductDiv.onlyIcon .dkLabFavProductSpan.hasIcon:before {
+    margin-right: 0px;
+}
+.product .dkLabComparerProductDiv.onlyIcon + .dkLabFavouriteProductDiv.onlyIcon {
+    right: 42px;
+}
+.dkLabFavFlagProduct {
+    background-color: var(--dklab-favourites-flag-color);
+    color: var(--dklab-favourites-flag-text-color);
+    max-width: none;
+}
+body.template-12 .dkLabFavPageProductWrapper .btn.btn-cart span {
+    display: none;
+}
+body.template-10 .dkLabFavPageProductWrapper .btn.btn-cart span {
+    display: none;
+}
+body.template-09 .dkLabFavPageProductWrapper .btn.btn-cart span {
+    display: none;
+}
+body.template-07 .dkLabFavPageProductWrapper .btn.btn-cart span {
+    display: none;
+}
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity input {
+    height: 30px;
+    width: 30px;
+}
+@media (max-width: 767px) {
+    .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity input {
+        height: 25px;
+    }
+}
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+    height: 50%;
+}
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease:before,
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase:before {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease {
+    top: 50%;
+}
+body.template-14 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+body.template-14 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+    height: 100%;
+    top: 0px;
+}
+body.template-13 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+body.template-13 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+    height: 100%;
+    top: 0px;
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    body.template-13.inDklabFavourites .products-block .quantity {
+        display: inline-block;
+    }
+}
+body.template-12 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+body.template-12 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+    height: 100%;
+    top: 0px;
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    body.template-12.inDklabFavourites .products-block .quantity {
+        display: inline-block;
+    }
+}
+body.template-11 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+body.template-11.inDklabFavourites .products-block .quantity {
+    vertical-align: bottom;
+}
+body.template-11.inDklabFavourites .products-block .quantity input {
+    height: 34px;
+    width: 30px;
+}
+body.template-11.inDklabFavourites .products-block .quantity .decrease,
+body.template-11.inDklabFavourites .products-block .quantity .increase {
+    height: 50%;
+}
+body.template-11.inDklabFavourites .products-block .quantity .decrease:before,
+body.template-11.inDklabFavourites .products-block .quantity .increase:before {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+body.template-11.inDklabFavourites .products-block .quantity .decrease {
+    top: 50%;
+}
+body.template-10 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+body.template-10 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+    height: 100%;
+    top: 0px;
+}
+@media (max-width: 1199px) {
+    body.template-10.inDklabFavourites .products-block .quantity {
+        display: block;
+        margin: 0px auto 5px auto;
+        width: 90px;
+    }
+}
+@media (max-width: 767px) {
+    body.template-09 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .decrease,
+    body.template-09 .dkLabFavPageProductWrapper .quantity.dkLabFavouriteQuantity .increase {
+        height: 100%;
+        top: 0px;
+    }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    body.template-09.inDklabFavourites .products-block .quantity {
+        margin-left: -36px;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    body.template-07.inDklabFavourites .products-block .quantity {
+        display: inline-block;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    body.template-07.inDklabFavourites .products-block .quantity input {
+        width: 40px;
+    }
+}
+body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+    width: 50px;
+    height: 30px;
+}
+@media (max-width: 767px) {
+    body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+        height: 25px;
+    }
+}
+body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteIncrease,
+body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteDecrease {
+    height: 50%;
+}
+body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteDecrease {
+    top: 50%;
+}
+body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+    height: 30px;
+}
+@media (max-width: 767px) {
+    body.template-06 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+        height: 25px;
+        width: 47px;
+    }
+}
+body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+    width: 50px;
+    height: 30px;
+}
+@media (max-width: 767px) {
+    body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+        height: 25px;
+    }
+}
+body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteIncrease,
+body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteDecrease {
+    height: 50%;
+}
+body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity .dkLabFavouriteDecrease {
+    top: 50%;
+}
+body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+    height: 30px;
+}
+@media (max-width: 767px) {
+    body.template-05 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+        height: 25px;
+        width: 47px;
+    }
+}
+body.template-04 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+    width: 35px;
+    height: 30px;
+}
+@media (max-width: 767px) {
+    body.template-04 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity {
+        height: 25px;
+    }
+}
+body.template-04 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+    height: 28px;
+}
+@media (max-width: 767px) {
+    body.template-04 .dkLabFavPageProductWrapper .dkLabFavouriteQuantity input {
+        height: 23px;
+    }
+}
+@media only screen and (max-width: 992px) and (orientation: portrait) {
+    body.template-04.inDklabFavourites .product .field-text-wrap {
+        display: block;
+    }
+}
+@media only screen and (max-width: 30em) {
+    body.template-04.inDklabFavourites .product .p-cart-button {
+        display: flex;
+    }
+}
+@media only screen and (max-width: 30em) {
+    body.template-04.inDklabFavourites .product .p-cart-button .b-cart {
+        min-width: auto;
+        flex-grow: 1;
+    }
+}
+#dkLabFavouriteDiv {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#dkLabComparerDiv + #dkLabFavouriteDiv,
+#dkLabFavouriteDiv + #dkLabComparerDiv {
+    margin-top: -20px;
+}
+#dkLabFavouritePageMenuWrapper {
+    position: relative;
+    padding: 0px 0px 10px 0px;
+    margin: 20px 0px 10px 0px;
+    overflow-x: auto;
+}
+#dkLabFavouritePageMenuWrapper.dkLabFavouritePageMenuHide {
+    display: none;
+}
+#dkLabFavouritePageMenu {
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
+    border-bottom: 1px solid #9a9a9a;
+    white-space: nowrap;
+}
+#dkLabFavouritePageMenu > li {
+    display: inline-block;
+    border: 1px solid #9a9a9a;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 3px 10px;
+    font-size: 14px;
+    position: relative;
+    top: 1px;
+    margin-right: 8px;
+    color: black;
+    cursor: pointer;
+    transition: 350ms;
+}
+#dkLabFavouritePageMenu > li.active {
+    border-bottom-color: white;
+}
+#dkLabFavouritePageMenu > li:hover {
+    color: var(--color-primary-hover);
+}
+#dkLabFavouritePageMenu > li span.dkLabFavPageTabCounter {
+    margin-left: 3px;
+}
+body.inDklabFavourites .content-inner {
+    max-width: none;
+}
+.dkLabFavPageActionButtons .btn.btn-secondary {
+    font-size: 11px;
+    padding: 6px 10px;
+    margin-left: 7px;
+    height: auto;
+    line-height: 1;
+}
+.dkLabFavPageActionButtons {
+    margin: -10px 0px 20px 0px;
+    text-align: right;
+}
+@media (max-width: 991px) {
+    .dkLabFavPageActionButtons .btn.btn-secondary {
+        margin-bottom: 7px;
+    }
+    .dkLabFavPageActionButtons .btn.btn-secondary span {
+        display: none;
+    }
+    #dkLabFavPageBtnAddList::before {
+        content: '\e918';
+        font-family: shoptet;
+    }
+    #dkLabFavPageBtnRenameList::before {
+        content: '\e934';
+        font-family: shoptet;
+    }
+    #dkLabFavPageBtnRemoveList::before {
+        content: '\e912';
+        font-family: shoptet;
+    }
+    #dkLabFavPageBtnShareList::before {
+        content: '\e933';
+        font-family: shoptet;
+    }
+}
+.dkLabFavoutitesPageEmptyList {
+    margin: 40px 0px;
+}
+span.dkLabFavDeleteBtn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    z-index: 2;
+}
+span.dkLabFavDeleteBtn:before {
+    position: absolute;
+    top: 6px;
+    left: 0px;
+    width: 14px;
+    border-top: 2px solid var(--dklab-favourites-red);
+    content: '';
+    transform: rotate(45deg);
+}
+span.dkLabFavDeleteBtn:after {
+    position: absolute;
+    top: 6px;
+    left: 0px;
+    width: 14px;
+    border-top: 2px solid var(--dklab-favourites-red);
+    content: '';
+    transform: rotate(-45deg);
+}
+span.dkLabFavDeleteBtn > span {
+    display: none;
+}
+#dkLabFavPageProductsContainer .product-wrap {
+    position: relative;
+}
+#dkLabFavPageProductsContainer .products-block .ratings-wrapper {
+    display: none;
+}
+.dkLabFavouritePageNotAllowed h2 {
+    color: var(--dklab-favourites-red);
+}
+.dkLabFavouritePageNotAllowed h2:before {
+    content: '!';
+    background: var(--dklab-favourites-red);
+    color: white;
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+/* Table view */
+.dkLabFavPageProductWrapper {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #b9b9b9;
+}
+.dkLabFavPageProductWrapper {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #bfbfbf;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0px;
+}
+.dkLabFavPageProductImg {
+    width: 50px;
+    margin-right: 15px;
+}
+.dkLabFavouritePageProductName {
+    flex-grow: 1;
+    line-height: 1.2;
+    margin-right: 15px;
+}
+.dkLabFavouritePageProductPrice {
+    margin-right: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.dkLabFavouritePageProductPrice strong {
+    font-size: 16px;
+}
+.dkLabFavouritePageProductPrice span {
+    font-size: 12px;
+}
+.dkLabFavPageProductWrapper .dkLabFavDeleteBtn {
+    position: relative;
+    margin-left: 10px;
+}
+.dkLabFavPageProductWrapper .btn.btn-primary,
+.dkLabFavPageProductWrapper .btn.btn-cart {
+    padding: 8px 12px;
+    height: auto;
+    line-height: 1;
+    font-size: 14px;
+}
+@media (max-width: 991px) {
+    .dkLabFavouritePageProductPrice strong {
+        font-size: 14px;
+    }
+    .dkLabFavouritePageProductPrice span {
+        font-size: 11px;
+    }
+    .dkLabFavPageProductImg,
+    .dkLabFavouritePageProductName,
+    .dkLabFavouritePageProductPrice {
+        margin-right: 10px;
+    }
+}
+@media (max-width: 767px) {
+    .dkLabFavouritePageProductPrice strong {
+        font-size: 13px;
+    }
+    .dkLabFavouritePageProductPrice span {
+        font-size: 10px;
+    }
+    .dkLabFavouritePageProductName {
+        font-size: 12px;
+    }
+    .dkLabFavPageProductWrapper .btn.btn-primary,
+    .dkLabFavPageProductWrapper .btn.btn-cart {
+        padding: 6px 8px;
+        height: auto;
+        line-height: 1;
+        font-size: 13px;
+    }
+}
+#dkLabFavCartWrapper {
+    background: white;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 1px 10px 10px 10px;
+}
+#dkLabFavCartHeader {
+    text-align: center;
+}
+#dkLabFavCartWrapper > div.dkLabFavPageProductWrapper:nth-last-of-type(1) {
+    border-bottom: 0px;
+}
+/* Samba */
+body.template-14 #dkLabFavCartWrapper .products-block {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#dkLabFavListsDialog,
+.dkLabFavCboxWrapper {
+    padding: 20px;
+}
+#dkLabFavListsDialog .dkLabFavManageListsHeader {
+    margin-top: 0px;
+    margin-bottom: 19px;
+}
+#dkLabFavListsDialog .dkLabFavManageOneList,
+#dkLabFavManageAddNewListText {
+    cursor: pointer;
+}
+#dkLabFavListsDialog .dkLabFavManageOneListWrapper + div,
+#dkLabFavListsDialog .dkLabFavManageAddListWrapper {
+    margin-top: 7px;
+    border-top: 1px solid #c3c3c3;
+    padding-top: 7px;
+}
+.dkLabFavCboxButtons {
+    margin-top: 10px;
+}
+.dkLabFavCboxDeleteQuestion {
+    font-size: 18px;
+    color: var(--dklab-favourites-red);
+}
+.dkLabFavCboxWrapper input[type='text'] {
+    border: 1px solid black;
+    width: calc(100% - 30px);
+    padding: 6px 10px;
+}
+#dkLabFavListsDialog .dkLabFavManageListProduct {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 7px;
+}
+#dkLabFavListsDialog .dkLabFavManageListProduct:before {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    content: '';
+    border: 1px solid black;
+    border-radius: 4px;
+}
+#dkLabFavListsDialog .dkLabFavManageListProduct.dkLabFavRemoveProduct:after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    content: '';
+    background: var(--color-primary-hover);
+}
+#dkLabFavListsDialog span.dkLabFavManageProductsCount {
+    margin-left: 4px;
+}
+#dkLabFavListsDialog span.dkLabFavManageProductsCount:before {
+    content: '(';
+}
+#dkLabFavListsDialog span.dkLabFavManageProductsCount:after {
+    content: ')';
+}
+#dkLabFavListsDialog .dkLabFavManageListLink {
+    background: #f4f4f4;
+    padding: 0px 5px;
+    border-radius: 4px;
+    margin-left: 10px;
+    line-height: 1;
+    color: black;
+    text-decoration: none;
+}
+#dkLabFavListsDialog .dkLabFavManageListLink:hover {
+    background: var(--color-primary-hover);
+    color: white;
+}
+#dkLabFavManageAddNewListText {
+    display: inline-block;
+}
+.dkLabFavManageAddNewListIcon {
+    display: inline-block;
+    background: #f4f4f4;
+    padding: 0px 5px;
+    border-radius: 4px;
+    margin-right: 4px;
+    line-height: 1;
+    color: black;
+    font-weight: 700;
+    transition: 350ms;
+}
+#dkLabFavManageAddNewListText:hover .dkLabFavManageAddNewListIcon {
+    background: var(--color-primary-hover);
+    color: white;
+}
+.dkLabFavManageAddListText {
+    color: black;
+    transition: 350ms;
+}
+#dkLabFavManageAddNewListText:hover .dkLabFavManageAddListText {
+    color: var(--color-primary-hover);
+}
+input.dkLabFavManageAddNewListInputText {
+    background: white;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-right: 4px;
+    line-height: 1;
+    color: black;
+    border: 1px solid black;
+    height: 25px;
+}
+.dkLabFavManageAddNewListInputButton {
+    background: var(--color-primary);
+    padding: 2px 5px;
+    border-radius: 4px;
+    line-height: 1;
+    color: white;
+    border: 1px solid var(--color-primary);
+    height: 25px;
+}
+.dkLabFavManageAddNewListInputButton:hover {
+    background: var(--color-primary-hover);
+    color: white;
+    border: 1px solid var(--color-primary-hover);
+}
+.dkLabFavCboxButtons .btn.btn-secondary {
+    font-size: 14px;
+    height: auto;
+    line-height: 1;
+    padding: 10px 20px;
+}
+@media (max-width: 991px) {
+    #dkLabFavListsDialog,
+    .dkLabFavCboxWrapper {
+        padding: 15px;
+    }
+    .dkLabFavCboxDeleteQuestion {
+        font-size: 16px;
+    }
+}
+@media (max-width: 767px) {
+    #dkLabFavListsDialog,
+    .dkLabFavCboxWrapper {
+        padding: 10px;
+    }
+    .dkLabFavCboxDeleteQuestion {
+        font-size: 14px;
+    }
+    .dkLabFavCboxButtons .btn.btn-secondary {
+        font-size: 12px;
+        padding: 10px 10px;
+    }
+}
+/* Template Classic */
+body.template-11 .dkLabFavHeaderIconBtn {
+    top: 3px;
+}
+@media (max-width: 767px) {
+    body.template-11 #dkLabFavHeaderWrapper {
+        position: absolute;
+        top: -49px;
+        right: 102px;
+    }
+    body.template-11 .dkLabFavHeaderIconBtn {
+        top: 1px;
+    }
+    body.template-11.mobile-header-version-1 #dkLabFavHeaderWrapper {
+        right: 148px;
+        top: -40px;
+    }
+    body.template-11:not(.mobile-header-version-0) #dkLabFavHeaderWrapper {
+        transition: transform 0.15s;
+    }
+    .scrolled-down body.template-11:not(.ordering-process):not(.search-window-visible):not(.mobile-header-version-0) #dkLabFavHeaderWrapper {
+        transform: translateY(-150%);
+    }
+}
+/* Template STEP */
+body.template-12 .navigation-buttons > #dkLabFavHeaderWrapper {
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: rgba(255, 255, 255, 0.3);
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    line-height: 38px;
+    text-align: center;
+    text-decoration: none;
+}
+body.template-12 .dkLabFavHeaderIconBtn em {
+    font-weight: 400;
+    font-size: 13px;
+    width: 19px;
+    height: 19px;
+    top: 0px;
+    right: 6px;
+    line-height: 19px;
+}
+@media (min-width: 480px) {
+    body.template-12 .navigation-buttons #dkLabFavHeaderWrapper {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+        line-height: 56px;
+    }
+    body.template-12 .dkLabFavHeaderIconBtn em {
+        top: 50%;
+        right: 50%;
+        margin-top: -8px;
+        margin-right: -21px;
+    }
+}
+@media (min-width: 992px) {
+    body.template-12 .navigation-buttons #dkLabFavHeaderWrapper {
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+    }
+    body.template-12 .dkLabFavHeaderIconBtn em {
+        top: 50%;
+        right: 50%;
+        margin-top: -20px;
+        margin-right: -25px;
+    }
+}
+@media (max-width: 767px) {
+    body.template-12 .dkLabFavHeaderIconBtn::before {
+        font-size: 18px;
+    }
+}
+@media (max-width: 479px) {
+    body.template-12 .dkLabFavHeaderIconBtn em {
+        margin-top: 23px;
+        margin-right: -5px;
+    }
+}
+/* Template DISCO */
+body.template-13 .dkLabFavHeaderIconBtn em {
+    font-weight: 400;
+    width: 17px;
+    height: 17px;
+    top: 32px;
+    right: -5px;
+    font-size: 11px;
+    line-height: 17px;
+}
+@media (max-width: 767px) {
+    body.template-13 .dkLabFavHeaderIconBtn::before {
+        font-size: 19px;
+    }
+    body.template-13 .dkLabFavHeaderIconBtn em {
+        top: 23px;
+        right: 6px;
+    }
+}
+/* Template Samba */
+body.template-14 .dkLabFavHeaderIconBtn::before {
+    font-size: 19px;
+}
+body.template-14 .dkLabFavHeaderIconBtn em {
+    top: 30px;
+    right: 5px;
+}
+body.template-14 .dkLabFavCboxWrapper input[type='text'] {
+    border-radius: 8px;
+}
+/* Template Waltz */
+body.template-10 #dkLabFavHeaderWrapper {
+    width: 42px;
+    height: 55px;
+    margin-left: 10px;
+}
+body.template-10 .dkLabFavHeaderIconBtn em {
+    font-size: 18px;
+    width: 24px;
+    padding: 3px;
+    height: 24px;
+    top: -10px;
+    right: -11px;
+    line-height: 18px;
+}
+body.template-10 .dkLabFavouriteProductDiv.onlyIcon {
+    right: auto;
+    left: 10px;
+}
+body.template-10 .dkLabFavCboxWrapper input[type='text'] {
+    border-radius: 50px;
+}
+@media (max-width: 767px) {
+    body.template-10 #dkLabFavHeaderWrapper {
+        margin-left: 0px;
+        margin-right: 10px;
+    }
+}
+@media (min-width: 321px) and (max-width: 767px) {
+    body.template-10.columns-mobile-2 .products-block > div .p .p-in > div.dkLabFavouriteProductDiv.onlyIcon {
+        width: auto;
+    }
+}
+/* Template Tango */
+body.template-09 #dkLabFavHeaderWrapper {
+    margin-right: 20px;
+}
+body.template-09 .dkLabFavHeaderIconBtn em {
+    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    top: 9px;
+    right: -6px;
+    line-height: 10px;
+}
+body.template-09 .highlight-product .dkLabFavouriteProductDiv.onlyIcon {
+    right: -21px;
+    top: 5px;
+}
+body.template-09 .highlight-product.product .dkLabComparerProductDiv.onlyIcon + .dkLabFavouriteProductDiv.onlyIcon {
+    right: -45px;
+}
+@media (max-width: 1199px) {
+    body.template-09 .product .dkLabFavouriteProductDiv {
+        position: absolute;
+        top: 9px;
+        right: 10px;
+        z-index: 1;
+        font-size: 0px;
+    }
+    body.template-09 .product .dkLabFavouriteProductDiv .dkLabFavProductSpan:before {
+        font-size: 18px;
+    }
+    body.template-09 .product .dkLabComparerProductDiv + .dkLabFavouriteProductDiv {
+        right: 42px;
+    }
+}
+@media (min-width: 768px) {
+    body.template-09 .highlight-product.product .dkLabFavouriteProductDiv {
+        position: absolute;
+        right: -21px;
+        top: 9px;
+        z-index: 1;
+        font-size: 0px;
+    }
+    body.template-09 .highlight-product.product .dkLabFavouriteProductDiv .dkLabFavProductSpan:before {
+        font-size: 18px;
+    }
+    .template-09 .highlight-product.product .dkLabComparerProductDiv + .dkLabFavouriteProductDiv,
+    .template-09 .highlight-product.product .dkLabFavouriteProductDiv + .dkLabComparerProductDiv {
+        right: -60px;
+    }
+}
+@media (min-width: 1200px) {
+    .template-09 .product:not(.highlight-product) .dkLabFavouriteProductDiv:not(.onlyIcon) {
+        display: block;
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        left: 0px;
+        top: 15px;
+    }
+    .template-09 .dkLabFavouriteProductDiv.onlyIcon {
+        right: 50%;
+        transform: translate(50%, 0px);
+    }
+    .template-09 .product .dkLabComparerProductDiv.onlyIcon + .dkLabFavouriteProductDiv.onlyIcon,
+    .template-09 .product .dkLabFavouriteProductDiv.onlyIcon + .dkLabComparerProductDiv.onlyIcon {
+        right: 50%;
+    }
+    body.template-09 .highlight-product.product .dkLabFavouriteProductDiv {
+        top: 5px;
+    }
+}
+/* Template Techno */
+body.template-07 .dkLabFavHeaderIconBtn em {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    top: auto;
+    bottom: 5px;
+}
+/* Templates 2. gen */
+body.template-04 .dkLabFavPageProductWrapper .btn.btn-primary,
+body.template-04 .dkLabFavPageProductWrapper .btn.btn-cart,
+body.template-05 .dkLabFavPageProductWrapper .btn.btn-primary,
+body.template-05 .dkLabFavPageProductWrapper .btn.btn-cart,
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-primary,
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-cart,
+body.template-04 .dkLabFavPageActionButtons .btn.btn-secondary,
+body.template-05 .dkLabFavPageActionButtons .btn.btn-secondary,
+body.template-06 .dkLabFavPageActionButtons .btn.btn-secondary,
+body.template-04 .dkLabFavCboxButtons .btn.btn-secondary,
+body.template-05 .dkLabFavCboxButtons .btn.btn-secondary,
+body.template-06 .dkLabFavCboxButtons .btn.btn-secondary {
+    cursor: pointer;
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    transition: 350ms;
+    background: var(--color-primary);
+}
+body.template-04 .dkLabFavPageProductWrapper .btn.btn-primary:hover,
+body.template-04 .dkLabFavPageProductWrapper .btn.btn-cart:hover,
+body.template-05 .dkLabFavPageProductWrapper .btn.btn-primary:hover,
+body.template-05 .dkLabFavPageProductWrapper .btn.btn-cart:hover,
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-primary:hover,
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-cart:hover,
+body.template-04 .dkLabFavPageActionButtons .btn.btn-secondary:hover,
+body.template-05 .dkLabFavPageActionButtons .btn.btn-secondary:hover,
+body.template-06 .dkLabFavPageActionButtons .btn.btn-secondary:hover,
+body.template-04 .dkLabFavCboxButtons .btn.btn-secondary:hover,
+body.template-05 .dkLabFavCboxButtons .btn.btn-secondary:hover,
+body.template-06 .dkLabFavCboxButtons .btn.btn-secondary:hover {
+    color: white;
+    background: var(--color-primary-hover);
+}
+/* Template POP */
+body.template-04 .dkLabFavouriteProductDiv:not(.onlyIcon) {
+    margin-top: 8px;
+}
+body.template-04 #dkLabFavHeaderWrapper {
+    position: absolute;
+    z-index: 30;
+    left: 0px;
+    top: 4.1rem;
+}
+body.template-04 .dkLabFavHeaderIconBtn em {
+    top: -6px;
+    right: -9px;
+}
+@media (max-width: 767px) {
+    body.template-04 .dkLabFavHeaderIconBtn::before {
+        font-size: 14px;
+    }
+    body.template-04 #dkLabFavHeaderWrapper {
+        left: 50%;
+        top: 1.55rem;
+    }
+    body.template-04 .dkLabFavHeaderIconBtn em {
+        top: -5px;
+        right: -6px;
+        font-size: 10px;
+        width: 12px;
+        height: 12px;
+        line-height: 12px;
+    }
+}
+/* Template Rock */
+body.template-05 .place-cart-here {
+    display: inline-block;
+    vertical-align: middle;
+}
+body.template-05 #dkLabFavHeaderWrapper {
+    padding: 17px 19px;
+    display: inline-block;
+    vertical-align: middle;
+}
+body.template-05 .dkLabFavHeaderIconBtn em {
+    top: -6px;
+    right: -9px;
+}
+body.template-05 .product .p-info {
+    position: static;
+}
+@media (max-width: 767px) {
+    body.template-05 #dkLabFavHeaderWrapper {
+        position: absolute;
+        top: 0.4rem;
+        right: 6.6rem;
+    }
+}
+/* Template Soul */
+body.template-06 .dkLabFavHeaderIconBtn em {
+    top: -6px;
+    right: -9px;
+}
+body.template-06 #dkLabFavHeaderIconBtn:hover {
+    text-decoration: none;
+}
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-primary:hover,
+body.template-06 .dkLabFavPageProductWrapper .btn.btn-cart:hover,
+body.template-06 .dkLabFavPageActionButtons .btn.btn-secondary:hover,
+body.template-06 .dkLabFavCboxButtons .btn.btn-secondary:hover {
+    color: black;
+}
+body.template-06 .dkLabFavouriteProductDiv {
+    position: relative;
+    right: 0px;
+    top: 0px;
+    margin-bottom: 8px;
+    left: 2px;
+}
+body.template-06 .product:hover .pr-list-hover-info > .dkLabFavouriteProductDiv {
+    z-index: 3;
+}
+@media only screen and (min-width: 768px) and (max-width: 48em) {
+    body.template-06.dklabFavHeader .search-submit {
+        margin-right: 15px;
+    }
+}
+@media (min-width: 768px) {
+    body.template-06 #dkLabFavHeaderWrapper > a {
+        padding: 0.165rem 0.9375rem;
+        margin-right: 0.9375rem;
+    }
+    body.template-06 .dkLabFavHeaderIconBtn em {
+        right: 6px;
+    }
+}
+@media (max-width: 767px) {
+    body.template-06 #dkLabFavHeaderWrapper {
+        position: absolute;
+        top: 3.35rem;
+        right: 0.3rem;
+    }
+}
+body.template-06 #category-products-wrapper span.dkLabFavDeleteBtn {
+    position: absolute;
+    top: 6px;
+    right: 18px;
+}
+body.template-04 #category-products-wrapper span.dkLabFavDeleteBtn {
+    position: absolute;
+    top: 6px;
+    right: 14px;
+}
+.dklabAddonsDetailWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+@media (max-width: 767px) {
+    .dklabAddonsDetailWrapper {
+        gap: 10px;
+    }
+}
+.dklabAddonsDetailWrapper .dklabNaposledyZakoupiliCelkem {
+    order: 0;
+}
+.dklabAddonsDetailWrapper .dkLabCountdownWrapper {
+    order: 1;
+}
+.dklabAddonsDetailWrapper .dkLabFavouriteDiv {
+    order: 2;
+}
+.dklabAddonsDetailWrapper .dkLabComparerDiv {
+    order: 3;
+}
+.dklabAddonsDetailWrapper #dkLabNoteMainWrapper {
+    order: 4;
+}
