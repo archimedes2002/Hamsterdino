@@ -3,4 +3,8 @@
 #esp.osdebug(None)
 #import webrepl
 #webrepl.start()
-import ledka_blik
+#import ledka_blik
+from time import sleep
+sleep(5)
+print("Starting RPMsenzor.py ...")
+import RPMsenzor

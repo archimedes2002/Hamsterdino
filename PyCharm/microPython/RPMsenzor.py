@@ -1,6 +1,9 @@
 from machine import Pin, Timer
 import time
 
+# inicializace LEDky
+led = Pin(19, Pin.OUT)
+
 # --- Nastavení ---
 PULSE_PIN = 2              # GPIO pin, který podporuje IRQ
 PULSES_PER_REV = 1         # Počet pulzů na jednu otáčku
@@ -19,7 +22,13 @@ def pulse_handler(pin):
     if time.ticks_diff(now, last_pulse_time) > DEBOUNCE_TIME_MS:
         pulse_count += 1
         last_pulse_time = now
+        led.value(1)
         #print("pulz detekovan!")
+
+def fall_handler(pin):
+    now = time.ticks_ms()
+    if time.ticks_diff(now, last_pulse_time) > DEBOUNCE_TIME_MS:
+        led.value(0)
 
 # --- Timer pro výpočet RPM ---
 def calc_rpm(timer):
@@ -32,6 +41,7 @@ def calc_rpm(timer):
 # --- Inicializace pinu a přerušení ---
 pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)
 pulse_pin.irq(trigger=Pin.IRQ_RISING, handler=pulse_handler)
+pulse_pin.irq(trigger=Pin.IRQ_FALLING, handler=fall_handler)
 
 # --- Timer každou sekundu vypočítá RPM ---
 timer = Timer(0)
@@ -39,4 +49,5 @@ timer.init(period=1000, mode=Timer.PERIODIC, callback=calc_rpm)
 
 # --- Hlavní smyčka ---
 while True:
-    time.sleep(1)
+    time.sleep(10)
+
