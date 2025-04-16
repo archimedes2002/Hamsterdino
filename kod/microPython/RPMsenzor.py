@@ -51,7 +51,7 @@ pulse_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=edge_handler)
 # --- Timer ---
 timer = Timer(0)
 timer.init(period=1000, mode=Timer.PERIODIC, callback=calc_rpm)
-
+ ijijijiddsddawdawddddddddddwdwadwdadawdwdwddddddddddddddddddddddd
 # --- Hlavni smycka ---
 while True:
     time.sleep(10)
