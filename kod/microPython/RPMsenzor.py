@@ -5,7 +5,7 @@ import time
 PULSE_PIN = 2
 LED_PIN = 19
 PULSES_PER_REV = 1
-DEBOUNCE_TIME_MS = 50
+DEBOUNCE_TIME_MS = 10
 
 # --- Inicializace ---
 led = Pin(LED_PIN, Pin.OUT)
@@ -51,7 +51,6 @@ pulse_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=edge_handler)
 # --- Timer ---
 timer = Timer(0)
 timer.init(period=1000, mode=Timer.PERIODIC, callback=calc_rpm)
- ijijijiddsddawdawddddddddddwdwadwdadawdwdwddddddddddddddddddddddd
 # --- Hlavni smycka ---
 while True:
     time.sleep(10)
