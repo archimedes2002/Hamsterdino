@@ -25,7 +25,7 @@ def load_wifi_credentials(file_path):
 
 # --- Funkce pro synchronizaci casu pres NTP ---
 def sync_time_with_ntp(retries=5, delay=2):
-
+    global sta_if
     for attempt in range(retries):
         try:
             ntptime.settime()
@@ -33,12 +33,15 @@ def sync_time_with_ntp(retries=5, delay=2):
             return True
         except Exception as e:
             dprint(f"Pokus {attempt+1}/{retries} – Chyba pri synchronizaci casu: {e}", level="WARNING")
+            if not sta_if.active(): # pokud by nebyl pripojen k siti
+                connect_to_wifi(SSID, PASSWORD)
             time.sleep(delay)
     dprint(f"Synchronizace casu selhala po {retries} pokusech", level="ERROR")
     return False
 
 # --- Funkce pro restart Wi-Fi ---
-def reset_wifi(sta_if):
+def reset_wifi():
+    global sta_if
     dprint("Restartuji Wi-Fi rozhrani", level="WARNING")
     sta_if.active(False)
     time.sleep(1)
@@ -47,9 +50,9 @@ def reset_wifi(sta_if):
 
 # --- Funkce pro pripojeni k Wi-Fi ---
 def connect_to_wifi(ssid, password, timeout=30):
-    sta_if = network.WLAN(network.STA_IF)
+    global sta_if
     dprint(f"Wi-Fi active status: {sta_if.active()}", level="DEBUG")
-    reset_wifi(sta_if)
+    reset_wifi()
     #if not sta_if.active():
     #    sta_if.active(True)
     #    time.sleep(1)
@@ -65,7 +68,7 @@ def connect_to_wifi(ssid, password, timeout=30):
         dot_count = (dot_count + 1) % 4
         if time.time() - start_time > timeout: # timeout
             print("\n")
-            reset_wifi(sta_if)
+            reset_wifi()
             dprint("Nezdarilo se pripojit k Wi-Fi behem stanoveneho casu", level="ERROR")
             return False;
     print("\n")
@@ -75,6 +78,7 @@ def connect_to_wifi(ssid, password, timeout=30):
 #-----------------------------------------------------------------------------------------------
 
 dprint("Zahajuji pripojovani k wifi")
+sta_if = network.WLAN(network.STA_IF)
 
 # --- Nacteni SSID a PASSWORD z externího souboru ---
 SSID, PASSWORD = load_wifi_credentials('wifi_credentials.txt')
