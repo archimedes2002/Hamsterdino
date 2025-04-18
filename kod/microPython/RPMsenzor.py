@@ -16,8 +16,12 @@ wheel_circumference_m = 2*pi*(WHEEL_RADIUS_MM/1000)
 led = Pin(LED_PIN, Pin.OUT)
 pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)
 
+#TODO: Komunikace s externim zalohovanym RTC modulem
+#TODO: Pripojeni ctecky SD karty
+
 # --- wifi (synchronizace času s NTP serverem)---
 import wifi
+dprint("Zacina mereni pulzu")
 
 # --- Promenne ---
 last_pulse_time = 0
@@ -71,7 +75,6 @@ def calc_avg_rpm(timer):
         max_rps = max(rps_list)
 
         # Výpis
-        #TODO: Vypis spravneho data podle RTC
         t = time.localtime() # Casova znacka ve formatu YYYY-MM-DD hh:mm:ss
         timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[0], t[1], t[2], t[3], t[4], t[5])
         delta_list_str = ', '.join(str(d) for d in time_deltas)
