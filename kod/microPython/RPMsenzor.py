@@ -16,6 +16,9 @@ wheel_circumference_m = 2*pi*(WHEEL_RADIUS_MM/1000)
 led = Pin(LED_PIN, Pin.OUT)
 pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)
 
+# --- wifi (synchronizace času s NTP serverem)---
+import wifi
+
 # --- Promenne ---
 last_pulse_time = 0
 #last_valid_pulse_time = 0
@@ -68,10 +71,10 @@ def calc_avg_rpm(timer):
         max_rps = max(rps_list)
 
         # Výpis
+        #TODO: Vypis spravneho data podle RTC
         t = time.localtime() # Casova znacka ve formatu YYYY-MM-DD hh:mm:ss
         timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[0], t[1], t[2], t[3], t[4], t[5])
         delta_list_str = ', '.join(str(d) for d in time_deltas)
-        #dprint("[{}]".format(timestamp))
         dprint(f"[{timestamp}]", level="INFO")
         dprint(f"dt[us]: [{delta_list_str}]", level="DEBUG2")
         dprint(f"Celych otacek: {len(time_deltas)}", level="INFO")
@@ -80,7 +83,7 @@ def calc_avg_rpm(timer):
         dprint(f"Prumerne: RPS: {rps:.2f}, RPM: {rpm:.2f}", level="INFO")
         dprint(f"Vzdalenost: {distance_m:.2f} m", level="INFO")
     else:
-        dprint("Zadne pulzy - RPM: 0")
+        dprint("Zadne pulzy - RPM: 0", level="DEBUG")
 
     time_deltas = []
     rotations_count = 0

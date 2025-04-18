@@ -3,11 +3,12 @@ import os
 
 import myPrint
 from myPrint import DEBUG_LEVELS, dprint
-myPrint.debug_level = myPrint.DEBUG_LEVELS["DEBUG"] # nastavení úrovně výpisu
+myPrint.debug_level = myPrint.DEBUG_LEVELS["DEBUG"] # nastavení úrovně výpisu:
+# NONE, ERROR, WARNING, INFO, DEBUG, DEBUG2, ALL
 
 # výpis základních informací
 dprint("Booting ESP32 ...")
-dprint("Filesystem obsahuje:", os.listdir())
+dprint(f"Filesystem obsahuje: {os.listdir()}")
 myPrint.print_visible_levels()
 
 from time import sleep

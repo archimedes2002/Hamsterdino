@@ -1,4 +1,4 @@
-# my own print
+# my own print function
 
 DEBUG_LEVELS = {
     "NONE": 0,
@@ -20,12 +20,11 @@ LEVEL_COLORS = {
     "INFO": "\033[92m",    # Zelená
     "WARNING": "\033[93m", # Žlutá
     "ERROR": "\033[91m",   # Červená
-
 }
 
 RESET_COLOR = "\033[0m"
 
-def dprint(*args, level="DEBUG", **kwargs):
+def dprint(*args, level="INFO", **kwargs):
     if DEBUG_LEVELS.get(level, 0) <= debug_level:
         color = LEVEL_COLORS.get(level, "")
         print(f"{color}[{level}]", *args, RESET_COLOR, **kwargs)
@@ -43,4 +42,4 @@ def print_visible_levels():
             result.append(f"{GREEN}{level}{RESET}")
         else:
             result.append(f"{RED}{level}{RESET}")
-    print("Viditelne urovne:", " | ".join(result))
+    print("Aktivni vypis:", " | ".join(result))
