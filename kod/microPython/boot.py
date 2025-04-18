@@ -3,7 +3,7 @@ import os
 
 import myPrint
 from myPrint import DEBUG_LEVELS, dprint
-myPrint.debug_level = myPrint.DEBUG_LEVELS["DEBUG2"] # nastavení úrovně výpisu
+myPrint.debug_level = myPrint.DEBUG_LEVELS["DEBUG"] # nastavení úrovně výpisu
 
 # výpis základních informací
 dprint("Booting ESP32 ...")
