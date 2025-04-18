@@ -6,7 +6,7 @@ from myPrint import DEBUG_LEVELS, dprint, debug_level
 debug_level = DEBUG_LEVELS["WARNING"]  # Změňte na INFO, abyste viděli všechny zprávy
 
 # výpis základních informací
-dprint("Booting ESP32...")
+dprint("Booting ESP32 ...")
 dprint("Filesystem obsahuje:", os.listdir())
 myPrint.print_visible_levels()
 
