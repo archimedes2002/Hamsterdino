@@ -12,7 +12,7 @@ dprint(f"Filesystem obsahuje: {os.listdir()}")
 myPrint.print_visible_levels()
 
 from time import sleep
-dprint("Starting RPMsenzor.py in 5 s (press CTRL+C to cancel)")
+dprint("Starting main.py in 5 s (press CTRL+C to cancel)")
 sleep(5)
-dprint("RPMsenzor.py started ...")
-import RPMsenzor
+dprint("main.py started ...")
+import main
