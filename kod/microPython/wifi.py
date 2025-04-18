@@ -12,10 +12,12 @@ def load_wifi_credentials(file_path):
         with open(file_path, 'r') as file:
             lines = file.readlines()
             for line in lines:
+                # vymaze vsechny bile znaky (mezery, tabulatory, nove radky)
                 line = line.strip()
-                if line.startswith('SSID='):
+                line = line.replace("\t", "").replace("\n", "").replace(" ", "")
+                if 'SSID=' in line:
                     ssid = line.split('=')[1]
-                elif line.startswith('PASSWORD='):
+                elif 'PASSWORD=' in line:
                     password = line.split('=')[1]
     except Exception as e:
         dprint(f"Chyba pri nacitani souboru s prihlasovacimi udaji: {e}", level="ERROR")
