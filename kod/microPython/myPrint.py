@@ -26,7 +26,7 @@ LEVEL_COLORS = {
 RESET_COLOR = "\033[0m"
 
 def dprint(*args, level="DEBUG", **kwargs):
-    #if DEBUG_LEVELS.get(level, 0) <= debug_level:
+    if DEBUG_LEVELS.get(level, 0) <= debug_level:
         color = LEVEL_COLORS.get(level, "")
         print(f"{color}[{level}]", *args, RESET_COLOR, **kwargs)
 from myPrint import DEBUG_LEVELS, debug_level
@@ -38,10 +38,9 @@ def print_visible_levels():
     # Seřadíme úrovně podle jejich hodnoty
     sorted_levels = sorted(DEBUG_LEVELS.items(), key=lambda item: item[1])
     result = []
-    print(f"{debug_level}")
     for level, val in sorted_levels:
-        if val < debug_level:
-            result.append(f"{RED}{level}{RESET}")
-        else:
+        if val <= debug_level:
             result.append(f"{GREEN}{level}{RESET}")
+        else:
+            result.append(f"{RED}{level}{RESET}")
     print("Viditelne urovne:", " | ".join(result))
