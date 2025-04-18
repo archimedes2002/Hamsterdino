@@ -1,6 +1,6 @@
 from machine import Pin, Timer
 import time
-from myPrint import DEBUG_LEVELS, dprint
+from myPrint import dprint
 
 # --- Nastaveni ---
 PULSE_PIN = 2
