@@ -1,5 +1,6 @@
 from machine import Pin, Timer
 import time
+from myPrint import DEBUG_LEVELS, dprint
 
 # --- Nastaveni ---
 PULSE_PIN = 2
@@ -17,28 +18,33 @@ pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)
 
 # --- Promenne ---
 last_pulse_time = 0
+last_valid_pulse_time = 0
 rotations_count = 0
 time_deltas = []
 
 # --- IRQ handler ---
 def edge_handler(pin):
-    global last_pulse_time, time_deltas, rotations_count
+    global last_pulse_time, last_valid_pulse_time, time_deltas, rotations_count
     now = time.ticks_us()
 
     if pin.value() == 0:  # Sestupna hrana
         if last_pulse_time != 0: #problém?
-            delta = time.ticks_diff(now, last_pulse_time)
-            if delta > DEBOUNCE_TIME_US:
+            delta = time.ticks_diff(now, last_valid_pulse_time)
+            debounce_delta = time.ticks_diff(now, last_pulse_time)
+            if debounce_delta > DEBOUNCE_TIME_US:
+                last_pulse_time = now
                 led.value(1)
-                print("Pulz: dt = {} us".format(delta))
-                if delta < MAX_ROTATION_PERIOD_US:
+                dprint("Pulz: dt = {} us, debounce_dt = {} us".format(delta, debounce_delta))
+                if debounce_delta < MAX_ROTATION_PERIOD_US:
+                    dprint("^ valid puls ^")
                     rotations_count += 1
                     time_deltas.append(delta)
-                    last_pulse_time = now  # pro vypocet casu mezi nabeznymy hranami
+                    last_valid_pulse_time = now  # pro vypocet casu mezi nabeznymy hranami
         else:
-            print("Prvni pulz...")
+            dprint("Prvni pulz...")
             led.value(1)
-            last_pulse_time = now  # pro vypocet casu mezi nabeznymy hranami
+            last_valid_pulse_time = now  # pro vypocet casu mezi nabeznymy hranami
+            last_pulse_time = now
     else:
         led.value(0)
     #last_pulse_time = now  # po ukocnceni pulzu se uloci cas jeho skonceni
@@ -65,13 +71,13 @@ def calc_avg_rpm(timer):
         t = time.localtime() # Casova znacka ve formatu YYYY-MM-DD hh:mm:ss
         timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(t[0], t[1], t[2], t[3], t[4], t[5])
         delta_list_str = ', '.join(str(d) for d in time_deltas)
-        print("[{}]".format(timestamp))
-        print("dt[us]: [{}]".format(delta_list_str))
-        print("Pulzu: {}, min RPS: {:.2f}, max RPS: {:.2f}".format(len(time_deltas), min_rps, max_rps))
-        print("Prumerne dt: {:.0f} us, RPS: {:.2f}, RPM: {:.2f}".format(avg_delta_us, rps, rpm))
-        print("Vzdalenost: {:.2f} m".format(distance_m))
+        dprint("[{}]".format(timestamp))
+        dprint("dt[us]: [{}]".format(delta_list_str))
+        dprint("Pulzu: {}, min RPS: {:.2f}, max RPS: {:.2f}".format(len(time_deltas), min_rps, max_rps))
+        dprint("Prumerne dt: {:.0f} us, RPS: {:.2f}, RPM: {:.2f}".format(avg_delta_us, rps, rpm))
+        dprint("Vzdalenost: {:.2f} m".format(distance_m))
     else:
-        print("Zadne pulzy - RPM: 0")
+        dprint("Zadne pulzy - RPM: 0")
 
     time_deltas = []
     rotations_count = 0
