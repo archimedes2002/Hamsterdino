@@ -20,8 +20,17 @@ sd = sdcard.SDCard(spi, cs)
 vfs = os.VfsFat(sd)
 os.mount(vfs, "/sd")
 
-# Test zápisu na SD kartu
+
 def SDtest(cislo=1):
+    """
+    Testuje zápis na SD kartu.
+
+    Parametry:
+    cislo (int): Číslo testu pro označení výpisu.
+
+    Vytvoří soubor "test.txt" na SD kartě a zapíše testovací zprávu.
+    V případě úspěchu vypíše zprávu o úspěchu, v případě chyby vypíše chybu.
+    """
     try:
         with open("/sd/test.txt", "w") as f:
             f.write("Test SD zapisu\n")
@@ -29,18 +38,19 @@ def SDtest(cislo=1):
     except Exception as e:
         print(f"[ERROR] SD test cislo:[{cislo}] selhal: {e}")
 
-# --- Nastaveni ---
-PULSE_PIN = 2
-LED_PIN = 15
-PULSES_PER_REV = 1
-DEBOUNCE_TIME_US = 10_000
-MAX_ROTATION_PERIOD_US = 2_000_000
-WHEEL_RADIUS_MM = 57
-pi = 3.141592653589793
-wheel_circumference_m = 2 * pi * (WHEEL_RADIUS_MM / 1000)
 
-led = Pin(LED_PIN, Pin.OUT)
-pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)
+# --- Nastaveni ---
+PULSE_PIN = 2  # Pin pro snímání pulsů
+LED_PIN = 15  # Pin pro LED
+PULSES_PER_REV = 1  # Počet pulsů na jednu otáčku
+DEBOUNCE_TIME_US = 10_000  # Debounce čas v mikrosekundách
+MAX_ROTATION_PERIOD_US = 2_000_000  # Maximální perioda rotace v mikrosekundách
+WHEEL_RADIUS_MM = 57  # Poloměr kola v milimetrech
+pi = 3.141592653589793  # Hodnota pí
+wheel_circumference_m = 2 * pi * (WHEEL_RADIUS_MM / 1000)  # Obvod kola v metrech
+
+led = Pin(LED_PIN, Pin.OUT)  # Inicializace LED
+pulse_pin = Pin(PULSE_PIN, Pin.IN, Pin.PULL_UP)  # Inicializace pinu pro puls
 
 dprint("Zacina mereni pulzu")
 
@@ -49,8 +59,17 @@ rotations_count = 0
 time_deltas = []
 last_log_time = time.time()
 
-# --- IRQ handler ---
+
 def edge_handler(pin):
+    """
+    Handler pro změnu stavu pinu při záznamu pulzu.
+
+    Parametry:
+    pin (Pin): Pin, který detekuje změnu stavu.
+
+    Funkce zaznamenává dobu mezi pulzy, počítá otáčky a aktualizuje časové rozdíly mezi pulzy.
+    Aktivuje LED při detekci pulzu a zajišťuje, že mezi pulzy neprobíhá žádné zpoždění (debounce).
+    """
     global last_pulse_time, time_deltas, rotations_count
     now = time.ticks_us()
     if pin.value() == 0:
@@ -68,8 +87,17 @@ def edge_handler(pin):
     else:
         led.value(0)
 
-# --- Timer callback ---
+
 def calc_avg_rpm(timer):
+    """
+    Vypočítá průměrné otáčky za minutu (RPM) a vzdálenost.
+
+    Parametry:
+    timer (Timer): Timer, který spustil tuto funkci.
+
+    Funkce vypočítá průměrné otáčky za minutu na základě zaznamenaných časových rozdílů mezi pulzy.
+    Výstupní hodnoty jsou zapsány do logu na SD kartu a vypsány do konzole.
+    """
     global time_deltas, rotations_count, last_log_time
 
     if time_deltas:
@@ -95,11 +123,25 @@ def calc_avg_rpm(timer):
     time_deltas = []
     rotations_count = 0
 
-# --- Web server ---
+
 def start_webserver():
+    """
+    Spustí webový server na ESP32 pro zobrazení logu RPM a grafu.
+
+    Tento server přijímá HTTP požadavky a zobrazuje HTML stránku s grafem otáček.
+    Data jsou načítána ze souboru log.txt na SD kartě a zobrazována v grafu pomocí knihovny Chart.js.
+    """
     time.sleep(1)
 
     def read_log():
+        """
+        Načte obsah logu z SD karty.
+
+        Vrací obsah souboru "log.txt" na SD kartě jako text.
+
+        Vrací:
+        str: Obsah log souboru.
+        """
         try:
             if "log.txt" in os.listdir("/sd"):
                 with open("/sd/log.txt") as f:
@@ -109,6 +151,12 @@ def start_webserver():
         return ""
 
     def html_page():
+        """
+        Vytvoří HTML stránku pro zobrazení grafu RPM.
+
+        Vrací:
+        str: HTML kód pro stránku s grafem.
+        """
         return """\
 <html>
 <head><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
@@ -144,6 +192,14 @@ fetch('/data').then(r => r.text()).then(text => {
 </html>"""
 
     def safe_send_lines(client, text, content_type="text/html"):
+        """
+        Bezpečně pošle HTTP odpověď klientovi.
+
+        Parametry:
+        client (socket): Socket připojeného klienta.
+        text (str): Textová odpověď, která bude odeslána.
+        content_type (str): Typ obsahu (např. "text/html").
+        """
         try:
             client.send("HTTP/1.0 200 OK\r\nContent-Type: {}\r\n\r\n".format(content_type))
             for line in text.split('\n'):
@@ -176,8 +232,14 @@ fetch('/data').then(r => r.text()).then(text => {
     except Exception as e:
         dprint(f"[ERROR] Nepodarilo se spustit webserver: {e}", level="ERROR")
 
-# --- Funkce pro zápis do logu ---
+
 def safe_write_to_sd():
+    """
+    Bezpečně zapisuje log do SD karty.
+
+    Funkce zajišťuje, že při zápisu na SD kartu nebude docházet k souběžnému přístupu,
+    a zajišťuje, že zápis bude proveden atomicky.
+    """
     log_lock.acquire()  # Zamek pro zápis
     try:
         if log_queue:
@@ -190,6 +252,7 @@ def safe_write_to_sd():
         dprint(f"Chyba pri zapisu na SD: {e}", level="ERROR")
     finally:
         log_lock.release()  # Odemknuti zámku pro další přístup
+
 
 # --- Spusteni ---
 _thread.start_new_thread(start_webserver, ())
