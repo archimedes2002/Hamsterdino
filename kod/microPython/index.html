@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="cz">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2>Křečkova aktivita</h2>
+<canvas id="chart" width="600" height="300"></canvas>
+
+<script>
+fetch('/data')
+  .then(r => r.text())
+  .then(text => {
+    const lines = text.trim().split('\n');
+    const labels = [];
+    const rpmValues = [];
+    const distanceValues = [];
+
+    for (let line of lines) {
+      const parts = line.split(',');
+      if (parts.length >= 3) {
+        labels.push(parts[0]);
+        rpmValues.push(parseFloat(parts[1]));
+        distanceValues.push(parseFloat(parts[2]));
+      }
+    }
+
+    new Chart(document.getElementById('chart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'RPM',
+            data: rpmValues,
+            borderColor: 'blue',
+            fill: false
+          },
+          {
+            label: 'Vzdálenost (m)',
+            data: distanceValues,
+            borderColor: 'green',
+            fill: false,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        stacked: false,
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'RPM'
+            }
+          },
+          y2: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Vzdálenost (m)'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          }
+        }
+      }
+    });
+});
+</script>
+</body>
+</html>

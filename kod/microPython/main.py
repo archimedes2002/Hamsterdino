@@ -44,7 +44,7 @@ PULSE_PIN = 2  # Pin pro snímání pulsů
 LED_PIN = 15  # Pin pro LED
 PULSES_PER_REV = 1  # Počet pulsů na jednu otáčku
 DEBOUNCE_TIME_US = 10_000  # Debounce čas v mikrosekundách
-MAX_ROTATION_PERIOD_US = 2_000_000  # Maximální perioda rotace v mikrosekundách
+MAX_ROTATION_PERIOD_US = 2_000_000  # Maximální perioda rotace v mikrosekundách (pak se bere, že kolečko stojí)
 WHEEL_RADIUS_MM = 57  # Poloměr kola v milimetrech
 pi = 3.141592653589793  # Hodnota pí
 wheel_circumference_m = 2 * pi * (WHEEL_RADIUS_MM / 1000)  # Obvod kola v metrech
@@ -62,7 +62,7 @@ last_log_time = time.time()
 
 def edge_handler(pin):
     """
-    Handler pro změnu stavu pinu při záznamu pulzu.
+    IRQ handler pro změnu stavu pinu při záznamu pulzu.
 
     Parametry:
     pin (Pin): Pin, který detekuje změnu stavu.
@@ -72,7 +72,7 @@ def edge_handler(pin):
     """
     global last_pulse_time, time_deltas, rotations_count
     now = time.ticks_us()
-    if pin.value() == 0:
+    if pin.value() == 0: # Sestupna hrana
         if last_pulse_time != 0:
             delta = time.ticks_diff(now, last_pulse_time)
             if delta > DEBOUNCE_TIME_US:
@@ -90,7 +90,7 @@ def edge_handler(pin):
 
 def calc_avg_rpm(timer):
     """
-    Vypočítá průměrné otáčky za minutu (RPM) a vzdálenost.
+    Timer pro výpočet průměrných otáček za minutu (RPM) a vzdálenost.
 
     Parametry:
     timer (Timer): Timer, který spustil tuto funkci.
@@ -152,44 +152,17 @@ def start_webserver():
 
     def html_page():
         """
-        Vytvoří HTML stránku pro zobrazení grafu RPM.
+        Načte HTML stránku ze souboru na SD kartě.
 
         Vrací:
-        str: HTML kód pro stránku s grafem.
+        str: HTML kód stránky, nebo prázdný řetězec při chybě.
         """
-        return """\
-<html>
-<head><script src="https://cdn.jsdelivr.net/npm/chart.js"></script></head>
-<body>
-<h2>RPM log</h2>
-<canvas id="chart" width="400" height="200"></canvas>
-<script>
-fetch('/data').then(r => r.text()).then(text => {
-  const lines = text.trim().split('\\n');
-  const labels = [], values = [];
-  for (let line of lines) {
-    const parts = line.split(',');
-    if (parts.length == 2) {
-      labels.push(parts[0]);
-      values.push(parseFloat(parts[1]));
-    }
-  }
-  new Chart(document.getElementById('chart'), {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'RPM',
-        data: values,
-        borderColor: 'blue',
-        fill: false
-      }]
-    }
-  });
-});
-</script>
-</body>
-</html>"""
+        try:
+            with open("index.html") as f:
+                return f.read()
+        except Exception as e:
+            dprint(f"[ERROR] Nelze načíst index.html: {e}", level="ERROR")
+            return "<html><body><h1>Chyba: Nelze načíst stránku</h1></body></html>"
 
     def safe_send_lines(client, text, content_type="text/html"):
         """
