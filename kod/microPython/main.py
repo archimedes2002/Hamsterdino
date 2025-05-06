@@ -4,7 +4,7 @@ import _thread
 import os
 import sdcard
 from myPrint import dprint
-#import wifi
+import wifi
 import socket
 from _thread import allocate_lock
 import uos
