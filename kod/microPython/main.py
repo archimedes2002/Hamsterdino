@@ -9,7 +9,7 @@ PULSES_PER_REV = 1
 DEBOUNCE_TIME_US = 10_000  # debounce 10 ms v mikrosekundach
 MAX_ROTATION_PERIOD_US = 2_000_000 # [us] max. doba, kterou muze trvat jedna otocka (pak se bere, že kolečko stojí)
 WHEEL_RADIUS_MM = 57 #milimeters
-pi = 3.1415926535897932384626433832795
+pi = 3.1415926535897932384626433832795 # just pi constant
 wheel_circumference_m = 2*pi*(WHEEL_RADIUS_MM/1000)
 
 # --- Inicializace ---
