@@ -75,6 +75,11 @@ def connect_to_wifi(ssid, password, timeout=30):
     dprint("Pripojeno k Wi-Fi siti")
     dprint("IP adresa:", sta_if.ifconfig()[0])
     return True
+
+# --- Funkce pro ziskani IP adresy ---
+def get_ip():
+    wlan = network.WLAN(network.STA_IF)
+    return wlan.ifconfig()[0]
 #-----------------------------------------------------------------------------------------------
 
 dprint("Zahajuji pripojovani k wifi")

@@ -4,7 +4,7 @@ import _thread
 import os
 import sdcard
 from myPrint import dprint
-import wifi
+#import wifi
 import socket
 from _thread import allocate_lock
 import uos
@@ -20,16 +20,18 @@ sd = sdcard.SDCard(spi, cs)
 vfs = os.VfsFat(sd)
 os.mount(vfs, "/sd")
 
-try:
-    with open("/sd/test.txt", "w") as f:
-        f.write("Test SD zapisu\n")
-    print("Test zapisu OK")
-except Exception as e:
-    print(f"[ERROR] SD test selhal: {e}")
+# Test zápisu na SD kartu
+def SDtest(cislo=1):
+    try:
+        with open("/sd/test.txt", "w") as f:
+            f.write("Test SD zapisu\n")
+        print(f"Test zapisu cislo:[{cislo}] OK")
+    except Exception as e:
+        print(f"[ERROR] SD test cislo:[{cislo}] selhal: {e}")
 
 # --- Nastaveni ---
 PULSE_PIN = 2
-LED_PIN = 19
+LED_PIN = 15
 PULSES_PER_REV = 1
 DEBOUNCE_TIME_US = 10_000
 MAX_ROTATION_PERIOD_US = 2_000_000
@@ -174,6 +176,21 @@ fetch('/data').then(r => r.text()).then(text => {
     except Exception as e:
         dprint(f"[ERROR] Nepodarilo se spustit webserver: {e}", level="ERROR")
 
+# --- Funkce pro zápis do logu ---
+def safe_write_to_sd():
+    log_lock.acquire()  # Zamek pro zápis
+    try:
+        if log_queue:
+            with open("/sd/log.txt", "a") as f:
+                while log_queue:
+                    t, r = log_queue.pop(0)
+                    f.write("{},{}\n".format(t, r))
+            print("Zapsano na SD kartu.")
+    except Exception as e:
+        dprint(f"Chyba pri zapisu na SD: {e}", level="ERROR")
+    finally:
+        log_lock.release()  # Odemknuti zámku pro další přístup
+
 # --- Spusteni ---
 _thread.start_new_thread(start_webserver, ())
 pulse_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=edge_handler)
@@ -183,15 +200,5 @@ timer.init(period=10_000, mode=Timer.PERIODIC, callback=calc_avg_rpm)
 # --- Hlavní smyčka ---
 while True:
     time.sleep(1)
-    log_lock.acquire()
-    if log_queue:
-        try:
-            with open("/sd/log.txt", "a") as f:
-                while log_queue:
-                    t, r = log_queue.pop(0)
-                    f.write("{},{}\n".format(t, r))
-            print("Zapsano na SD kartu.")
-        except Exception as e:
-            dprint(f"Chyba pri zapisu na SD: {e}", level="ERROR")
-    log_lock.release()
-    uos.sync()
+    safe_write_to_sd()  # Zapisujeme do SD karty bez souběžného přístupu
+    uos.sync()  # Zajistíme, že data jsou uložena na SD kartu
