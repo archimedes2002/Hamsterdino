@@ -4,11 +4,15 @@ import _thread
 import os
 import sdcard
 from myPrint import dprint
+from collections import deque
+
 import wifi
 import socket
 
+log_queue = deque()  # globální fronta na logy
+
 # --- SD karta ---
-spi = SPI(2, baudrate=1_000_000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
+spi = SPI(2, baudrate=400_000, polarity=0, phase=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
 cs = Pin(5, Pin.OUT)
 sd = sdcard.SDCard(spi, cs)
 vfs = os.VfsFat(sd)
@@ -68,13 +72,15 @@ def calc_avg_rpm(timer):
 
         dprint(f"[{timestamp}] RPM: {rpm:.2f}, vzdalenost: {distance_m:.2f} m")
 
-        # --- Zápis na SD každou minutu ---
+        # --- Pravidenlý zápis na SD kartu ---
         now = time.time()
-        if now - last_log_time >= 60:
+        print(f"now:[{now}, last_log_time:[{last_log_time}, rozdil=[{now-last_log_time}] >=? 10")
+        if now - last_log_time >= 10:
             try:
                 with open("/sd/log.txt", "a") as f:
                     f.write("{},{}\n".format(timestamp, rpm))
                 last_log_time = now
+                print("Provden zapis na SD kartu: {},{}\n".format(timestamp, rpm))
             except Exception as e:
                 dprint(f"Chyba pri zapisu na SD: {e}", level="ERROR")
     else:
