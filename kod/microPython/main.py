@@ -21,6 +21,7 @@ vfs = os.VfsFat(sd)
 os.mount(vfs, "/sd")
 
 UPLOAD_PERIOD = 10_000 # [ms]
+ADD_HOURS = 2 # GMT+ADD_HOURS
 
 def SDtest(cislo=1):
     """
@@ -111,7 +112,49 @@ def calc_avg_rpm(timer):
         rps_list = [1.0 / (d / 1_000_000 * PULSES_PER_REV) for d in time_deltas]
         min_rps = min(rps_list)
         max_rps = max(rps_list)
-        timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(*t[:6])
+
+        # Vypočteme nové hodiny
+        new_hour = (t[3] + ADD_HOURS) % 24
+        # Počet dní, které se přidají na základě přetékajících hodin
+        days_to_add = (t[3] + ADD_HOURS) // 24
+        # Aktualizujeme den podle přidaných dní
+        new_day = t[2] + days_to_add
+        # Oprava přechodů přes dny, měsíce, roky
+        if new_day > 31:  # Ověříme maximální počet dní v měsíci
+            if t[1] == 1 or t[1] == 3 or t[1] == 5 or t[1] == 7 or t[1] == 8 or t[1] == 10 or t[1] == 12:
+                if new_day > 31:
+                    new_day -= 31
+                    new_month = t[1] + 1
+                    if new_month > 12:  # Pokud přeskočíme na nový rok
+                        new_month = 1
+                        new_year = t[0] + 1
+                    else:
+                        new_year = t[0]
+            else:
+                # Pro ostatní měsíce zohledníme 30 dní a únor (28 nebo 29)
+                if t[1] == 2:
+                    if new_day > 29:
+                        new_day -= 29
+                        new_month = 3
+                    else:
+                        new_month = t[1]
+                        new_year = t[0]
+                else:
+                    # Změna měsíce pro měsíce s 30 dny
+                    if new_day > 30:
+                        new_day -= 30
+                        new_month = t[1] + 1
+                        if new_month > 12:
+                            new_month = 1
+                            new_year = t[0] + 1
+                        else:
+                            new_year = t[0]
+        else:
+            new_year = t[0]
+            new_month = t[1]
+
+        # Sestavení nového timestampu
+        timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(new_year, new_month, new_day, new_hour, t[4], t[5])
         dprint(f"[{timestamp}] RPM: {rps:.2f},RPMmax: {max_rps:.2f}, RPMmin: {min_rps:.2f}, vzdalenost: {distance_m:.2f} m")
 
         now = time.time()
