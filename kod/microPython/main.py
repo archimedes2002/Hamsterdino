@@ -100,21 +100,24 @@ def calc_avg_rpm(timer):
     """
     global time_deltas, rotations_count, last_log_time
 
-    if time_deltas:
+    if time_deltas: #pokud byl detekovan pohyb
         avg_delta_us = sum(time_deltas) / len(time_deltas)
         avg_delta_s = avg_delta_us / 1_000_000
         rps = 1.0 / (avg_delta_s * PULSES_PER_REV)
         rpm = rps * 60
         distance_m = (rotations_count / PULSES_PER_REV) * wheel_circumference_m
         t = time.localtime()
-        timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(*t[:6])
-
-        dprint(f"[{timestamp}] RPM: {rpm:.2f}, vzdalenost: {distance_m:.2f} m")
+        rps_list = [1.0 / (d / 1_000_000 * PULSES_PER_REV) for d in time_deltas]
+        min_rps = min(rps_list)
+        max_rps = max(rps_list)
+        timestamp = "{:04d}-{:02d}-{:02d}T{:02d}:{:02d}:{:02d}".format(*t[:6])
+        dprint(f"[{timestamp}] RPM: {rps:.2f},RPMmax: {max_rps:.2f}, RPMmin: {min_rps:.2f}, vzdalenost: {distance_m:.2f} m")
 
         now = time.time()
+        dprint(f"dif: [{now - last_log_time}] >=? 10",  level="DEBUG")
         if now - last_log_time >= 10:
             log_lock.acquire()
-            log_queue.append((timestamp, rpm))
+            log_queue.append((timestamp, rps, min_rps, max_rps, distance_m))
             log_lock.release()
             last_log_time = now
     else:
@@ -218,8 +221,8 @@ def safe_write_to_sd():
         if log_queue:
             with open("/sd/log.txt", "a") as f:
                 while log_queue:
-                    t, r = log_queue.pop(0)
-                    f.write("{},{}\n".format(t, r))
+                    t, avs, mins, maxs, d = log_queue.pop(0)
+                    f.write("{},{},{},{},{}\n".format(t, avs, mins, maxs, d))
             print("Zapsano na SD kartu.")
     except Exception as e:
         dprint(f"Chyba pri zapisu na SD: {e}", level="ERROR")

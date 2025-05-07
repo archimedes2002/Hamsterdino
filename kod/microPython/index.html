@@ -5,8 +5,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<h2>Křečkova aktivita</h2>
-<canvas id="chart" width="600" height="300"></canvas>
+<h1>Křečkova aktivita</h1>
+
+
+<canvas id="chart1" width="600" height="300"></canvas>
+
+<canvas id="chart2" width="600" height="300" style="margin-top:100px;"></canvas>
 
 <script>
 fetch('/data')
@@ -14,66 +18,80 @@ fetch('/data')
   .then(text => {
     const lines = text.trim().split('\n');
     const labels = [];
-    const rpmValues = [];
+    const rpsValues = [], rpsMinValues = [], rpsMaxValues = [];
     const distanceValues = [];
 
     for (let line of lines) {
       const parts = line.split(',');
-      if (parts.length >= 3) {
+      if (parts.length >= 5) {
         labels.push(parts[0]);
-        rpmValues.push(parseFloat(parts[1]));
-        distanceValues.push(parseFloat(parts[2]));
+        rpsValues.push(parseFloat(parts[1]));
+        rpsMinValues.push(parseFloat(parts[2]));
+        rpsMaxValues.push(parseFloat(parts[3]));
+        distanceValues.push(parseFloat(parts[4]));
       }
     }
 
-    new Chart(document.getElementById('chart'), {
+
+    new Chart(document.getElementById('chart1'), {
       type: 'line',
       data: {
         labels: labels,
         datasets: [
           {
-            label: 'RPM',
-            data: rpmValues,
+            label: 'Prumerne ot/s',
+            data: rpsValues,
             borderColor: 'blue',
             fill: false
           },
           {
-            label: 'Vzdálenost (m)',
-            data: distanceValues,
+            label: 'Max ot/s',
+            data: rpsMaxValues,
             borderColor: 'green',
             fill: false,
-            yAxisID: 'y2'
+          },
+          {
+            label: 'Min ot/s',
+            data: rpsMinValues,
+            borderColor: 'red',
+            fill: false,
           }
         ]
       },
       options: {
         responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false
-        },
+        interaction: { mode: 'index', intersect: false },
         stacked: false,
         scales: {
           y: {
             type: 'linear',
-            display: true,
             position: 'left',
-            title: {
-              display: true,
-              text: 'RPM'
-            }
+            title: { display: true, text: 'RPM' }
           },
-          y2: {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            title: {
-              display: true,
-              text: 'Vzdálenost (m)'
-            },
-            grid: {
-              drawOnChartArea: false
-            }
+        }
+      }
+    });
+
+
+    new Chart(document.getElementById('chart2'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Vzdálenost (m)',
+            data: distanceValues,
+            borderColor: 'red',
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            title: { display: true, text: 'Vzdálenost [m]' }
           }
         }
       }
