@@ -20,6 +20,7 @@ sd = sdcard.SDCard(spi, cs)
 vfs = os.VfsFat(sd)
 os.mount(vfs, "/sd")
 
+UPLOAD_PERIOD = 10_000 # [ms]
 
 def SDtest(cislo=1):
     """
@@ -234,7 +235,7 @@ def safe_write_to_sd():
 _thread.start_new_thread(start_webserver, ())
 pulse_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=edge_handler)
 timer = Timer(0)
-timer.init(period=10_000, mode=Timer.PERIODIC, callback=calc_avg_rpm)
+timer.init(period=UPLOAD_PERIOD, mode=Timer.PERIODIC, callback=calc_avg_rpm)
 
 # --- Hlavní smyčka ---
 while True:

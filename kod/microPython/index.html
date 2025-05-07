@@ -1,102 +1,105 @@
 <!DOCTYPE html>
 <html lang="cz">
 <head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <title>Křečkova aktivita</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    canvas { display: block; margin: 40px auto; }
+    label, input, button { font-size: 1rem; margin: 10px; }
+  </style>
 </head>
 <body>
-<h1>Křečkova aktivita</h1>
+  <h1>Křečkova aktivita</h1>
 
+  <label for="fromTime">Od:</label>
+  <input type="datetime-local" id="fromTime">
+  <label for="toTime">Do:</label>
+  <input type="datetime-local" id="toTime">
+  <button onclick="loadData()">Načíst data</button>
 
-<canvas id="chart1" width="600" height="300"></canvas>
+  <canvas id="chart1" width="800" height="300"></canvas>
+  <canvas id="chart2" width="800" height="300"></canvas>
 
-<canvas id="chart2" width="600" height="300" style="margin-top:100px;"></canvas>
+  <script>
+    let chart1 = null;
+    let chart2 = null;
 
-<script>
-fetch('/data')
-  .then(r => r.text())
-  .then(text => {
-    const lines = text.trim().split('\n');
-    const labels = [];
-    const rpsValues = [], rpsMinValues = [], rpsMaxValues = [];
-    const distanceValues = [];
+    function loadData() {
+      const fromTimeStr = document.getElementById('fromTime').value;
+      const toTimeStr = document.getElementById('toTime').value;
+      const fromTime = fromTimeStr ? new Date(fromTimeStr) : null;
+      const toTime = toTimeStr ? new Date(toTimeStr) : null;
 
-    for (let line of lines) {
-      const parts = line.split(',');
-      if (parts.length >= 5) {
-        labels.push(parts[0]);
-        rpsValues.push(parseFloat(parts[1]));
-        rpsMinValues.push(parseFloat(parts[2]));
-        rpsMaxValues.push(parseFloat(parts[3]));
-        distanceValues.push(parseFloat(parts[4]));
-      }
+      fetch('/data')
+        .then(r => r.text())
+        .then(text => {
+          const lines = text.trim().split('\n');
+          const labels = [];
+          const rpsValues = [], rpsMinValues = [], rpsMaxValues = [], distanceValues = [];
+
+          for (let line of lines) {
+            const parts = line.split(',');
+            if (parts.length >= 5) {
+              const timestamp = parts[0];
+              const date = new Date(timestamp);
+              if ((!fromTime || date >= fromTime) && (!toTime || date <= toTime)) {
+                labels.push(timestamp);
+                rpsValues.push(parseFloat(parts[1]));
+                rpsMinValues.push(parseFloat(parts[2]));
+                rpsMaxValues.push(parseFloat(parts[3]));
+                distanceValues.push(parseFloat(parts[4]));
+              }
+            }
+          }
+
+          if (chart1) chart1.destroy();
+          if (chart2) chart2.destroy();
+
+          chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: 'Průměrné ot/s', data: rpsValues, borderColor: 'blue', fill: false },
+                { label: 'Max ot/s', data: rpsMaxValues, borderColor: 'green', fill: false },
+                { label: 'Min ot/s', data: rpsMinValues, borderColor: 'red', fill: false }
+              ]
+            },
+            options: {
+              responsive: true,
+              interaction: { mode: 'index', intersect: false },
+              scales: {
+                y: { title: { display: true, text: 'Otáčky [ot/s]' } },
+                x: { title: { display: true, text: 'Čas' } }
+              }
+            }
+          });
+
+          chart2 = new Chart(document.getElementById('chart2').getContext('2d'), {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: 'Vzdálenost [m]', data: distanceValues, borderColor: 'purple', fill: false }
+              ]
+            },
+            options: {
+              responsive: true,
+              interaction: { mode: 'index', intersect: false },
+              scales: {
+                y: { title: { display: true, text: 'Vzdálenost [m]' } },
+                x: { title: { display: true, text: 'Čas' } }
+              }
+            }
+          });
+        })
+        .catch(err => {
+          console.error("Chyba při načítání dat:", err);
+        });
     }
 
-
-    new Chart(document.getElementById('chart1'), {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Prumerne ot/s',
-            data: rpsValues,
-            borderColor: 'blue',
-            fill: false
-          },
-          {
-            label: 'Max ot/s',
-            data: rpsMaxValues,
-            borderColor: 'green',
-            fill: false,
-          },
-          {
-            label: 'Min ot/s',
-            data: rpsMinValues,
-            borderColor: 'red',
-            fill: false,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        stacked: false,
-        scales: {
-          y: {
-            type: 'linear',
-            position: 'left',
-            title: { display: true, text: 'RPM' }
-          },
-        }
-      }
-    });
-
-
-    new Chart(document.getElementById('chart2'), {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Vzdálenost (m)',
-            data: distanceValues,
-            borderColor: 'red',
-            fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        scales: {
-          y: {
-            title: { display: true, text: 'Vzdálenost [m]' }
-          }
-        }
-      }
-    });
-});
-</script>
+    window.addEventListener('load', loadData);
+  </script>
 </body>
 </html>
