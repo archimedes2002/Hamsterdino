@@ -7,6 +7,12 @@
   <style>
     canvas { display: block; margin: 40px auto; }
     label, input, button { font-size: 1rem; margin: 10px; }
+
+    /* Zarovnání textu napravo pro poslední log */
+    #lastLogTime {
+      text-align: right;
+      margin-right: 20px;
+    }
   </style>
 </head>
 <body>
@@ -22,6 +28,7 @@
   <canvas id="chart2" width="800" height="300"></canvas>
 
   <p id="totalDistance">Celková vzdálenost: 0 m</p>
+  <p id="lastLogTime">Čas posledního logu: Není k dispozici</p>
 
   <script>
     let chart1 = null;
@@ -40,6 +47,8 @@
           const labels = [];
           const rpsValues = [], rpsMinValues = [], rpsMaxValues = [], distanceValues = [];
           let totalDistance = 0;  // Proměnná pro součet vzdáleností
+          let lastTimestamp = null;  // Proměnná pro poslední časovou značku ve všech datech
+          let lastDisplayedTimestamp = null;  // Proměnná pro poslední zobrazenou časovou značku
 
           let previousTimestamp = null;
 
@@ -48,6 +57,11 @@
             if (parts.length >= 5) {
               const timestamp = parts[0];
               const date = new Date(timestamp);
+              // Uložíme poslední časovou značku bez ohledu na to, zda je zobrazená
+              if (!lastTimestamp || date > lastTimestamp) {
+                lastTimestamp = date;
+              }
+
               if ((!fromTime || date >= fromTime) && (!toTime || date <= toTime)) {
                 // Pokud je časová značka ztracena mezi dvěma hodnotami, přidáme nulové hodnoty
                 if (previousTimestamp && (date - previousTimestamp > 60000)) {  // 60 sekund bez dat
@@ -70,6 +84,8 @@
                 distanceValues.push(distance);
                 totalDistance += distance;  // Přičteme vzdálenost k součtu
 
+                lastDisplayedTimestamp = date;  // Uložíme časovou značku pro zobrazená data
+
                 previousTimestamp = date;  // Uložíme časovou značku pro další iteraci
               }
             }
@@ -77,6 +93,11 @@
 
           // Aktualizace součtu vzdálenosti na stránce
           document.getElementById('totalDistance').textContent = `Celková vzdálenost: ${totalDistance.toFixed(2)} m`;
+
+          // Aktualizace času posledního logu na stránce (včetně dat, která nejsou zobrazená)
+          if (lastTimestamp) {
+            document.getElementById('lastLogTime').textContent = `Čas posledního logu: ${new Date(lastTimestamp).toLocaleString()}`;
+          }
 
           // Zničíme předchozí grafy, pokud existují
           if (chart1) chart1.destroy();
