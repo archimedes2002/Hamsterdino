@@ -21,6 +21,8 @@
   <canvas id="chart1" width="800" height="300"></canvas>
   <canvas id="chart2" width="800" height="300"></canvas>
 
+  <p id="totalDistance">Celková vzdálenost: 0 m</p>
+
   <script>
     let chart1 = null;
     let chart2 = null;
@@ -37,6 +39,9 @@
           const lines = text.trim().split('\n');
           const labels = [];
           const rpsValues = [], rpsMinValues = [], rpsMaxValues = [], distanceValues = [];
+          let totalDistance = 0;  // Proměnná pro součet vzdáleností
+
+          let previousTimestamp = null;
 
           for (let line of lines) {
             const parts = line.split(',');
@@ -44,18 +49,40 @@
               const timestamp = parts[0];
               const date = new Date(timestamp);
               if ((!fromTime || date >= fromTime) && (!toTime || date <= toTime)) {
+                // Pokud je časová značka ztracena mezi dvěma hodnotami, přidáme nulové hodnoty
+                if (previousTimestamp && (date - previousTimestamp > 60000)) {  // 60 sekund bez dat
+                  const missingMinutes = (date - previousTimestamp) / 60000;  // Přepočet na minuty
+                  for (let i = 1; i < missingMinutes; i++) {
+                    //labels.push(new Date(previousTimestamp.getTime() + i * 60000).toISOString());
+                    labels.push('');  // Nezobrazí se žádný čas pro doplněné nulové hodnoty
+                    rpsValues.push(0);
+                    rpsMinValues.push(0);
+                    rpsMaxValues.push(0);
+                    distanceValues.push(0);
+                  }
+                }
+
                 labels.push(timestamp);
                 rpsValues.push(parseFloat(parts[1]));
                 rpsMinValues.push(parseFloat(parts[2]));
                 rpsMaxValues.push(parseFloat(parts[3]));
-                distanceValues.push(parseFloat(parts[4]));
+                const distance = parseFloat(parts[4]);
+                distanceValues.push(distance);
+                totalDistance += distance;  // Přičteme vzdálenost k součtu
+
+                previousTimestamp = date;  // Uložíme časovou značku pro další iteraci
               }
             }
           }
 
+          // Aktualizace součtu vzdálenosti na stránce
+          document.getElementById('totalDistance').textContent = `Celková vzdálenost: ${totalDistance.toFixed(2)} m`;
+
+          // Zničíme předchozí grafy, pokud existují
           if (chart1) chart1.destroy();
           if (chart2) chart2.destroy();
 
+          // Vytvoření nových grafů
           chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
             type: 'line',
             data: {
