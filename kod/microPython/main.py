@@ -42,7 +42,7 @@ def SDtest(cislo=1):
 
 
 # --- Nastaveni ---
-PULSE_PIN = 2  # Pin pro snímání pulsů
+PULSE_PIN = 21  # Pin pro snímání pulsů
 LED_PIN = 15  # Pin pro LED
 PULSES_PER_REV = 1  # Počet pulsů na jednu otáčku
 DEBOUNCE_TIME_US = 10_000  # Debounce čas v mikrosekundách
